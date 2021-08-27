@@ -1,0 +1,68 @@
+.progressInfo {
+    border-left: 5px;
+    border-left-style: solid;
+    border-left-color: black;
+}
+
+.progressTitle {
+    font-weight: 700;
+}
+
+.progressDate {
+    opacity: .7;
+    font-size: .9rem;
+}
+
+.progressBar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.progressItem {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.circle {
+    background: linear-gradient(#e66465, #9198e5);    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    margin-right: 1rem;
+    margin-left: .5rem;
+}
+
+.line {
+    top: 25px;
+    right: 28px;
+    height: 100%;
+    position: absolute;
+    border-left: 2px solid #9198e5;
+}
+
+.progressItem:last-child .line {
+    display: none !important;
+}
+
+.stepper {
+    position: relative;
+}
+
+.content {
+    display: inline-block;
+}
+
+.ballAndDate {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.date {
+    opacity: .7;
+    font-size: .8rem;
+}
