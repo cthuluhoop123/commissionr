@@ -1,11 +1,10 @@
 import { Route, Switch } from 'react-router-dom';
-
-import Home from './Views/Home.js';
+import Progress from './Views/Progress.js';
 
 function App() {
     return (
         <Switch>
-            <Route exact path='/' component={Home} />
+            <Route exact path='/' component={Progress} />
             <Route path='/*'>
                 <h1>what</h1>
             </Route>
