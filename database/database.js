@@ -18,15 +18,32 @@ async function registerUser({ email, artistName, passwordHash }) {
     return user;
 }
 
-async function getUser(email) {
+async function getUser(query) {
     const user = await User.query()
-        .findOne({
-            email
-        });
+        .findOne(query);
     return user;
+}
+
+async function getCommissions(id) {
+    const commissions = await Commission.query()
+        .where({
+            user_id: id
+        });
+    return commissions;
+}
+
+async function createCommission({ id: user_id, name }) {
+    const commissions = await Commission.query()
+        .insert({
+            user_id,
+            name
+        });
+    return commissions;
 }
 
 module.exports = {
     registerUser,
-    getUser
+    getUser,
+    getCommissions,
+    createCommission
 };

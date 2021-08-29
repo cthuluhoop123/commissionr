@@ -1,21 +1,7 @@
-.projectsTable {
-    margin-top: 2rem;
+.heading {
+    margin-bottom: 1rem;
 }
 
-.row {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.actions {
+    margin-bottom: 1rem;
 }
-
-.responsiveTbName {
-    display: block;
-}
-
-@media only screen and (min-width: 600px) {
-    .responsiveTbName {
-        display: none;
-    }
-}
-
-@media only screen and (min-width: 768px) {}

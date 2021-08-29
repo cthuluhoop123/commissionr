@@ -1,139 +1,56 @@
-import styles from '../Css/dash.module.css';
+import { useContext, useEffect, useState } from 'react';
 
 import {
+    Button,
     Typography,
-    Table,
-    TableCell,
-    TableContainer,
-    Paper,
-    TableHead,
-    TableRow,
-    TableBody,
-    makeStyles
 } from '@material-ui/core';
 
 import Commission from '../Components/Commission.js';
 
-const commissions = [
-    {
-        name: 'Commissioner 1'
-    },
-    {
-        name: 'Seargent Gilbert'
-    },
-    {
-        name: 'Some other dude'
-    },
-    {
-        name: 'Big boy'
-    }
-];
+import styles from '../Css/dash.module.css';
 
-const useCellStyle = makeStyles(theme => (
-    {
-        root: {
-            [theme.breakpoints.down('xs')]: {
-                display: 'block',
-                borderBottom: 'none',
-                padding: '10px'
-            }
-        }
-    }
-));
+import request from 'axios';
 
-const useRowStyle = makeStyles(theme => (
-    {
-        root: {
-            [theme.breakpoints.down('xs')]: {
-                borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                padding: '1rem'
-            }
-        }
-    }
-));
-
-const useHeadStyles = makeStyles(theme => (
-    {
-        root: {
-            [theme.breakpoints.down('xs')]: {
-                display: 'none'
-            }
-        }
-    }
-));
-
-const useTableStyles = makeStyles(theme => (
-    {
-        root: {
-            [theme.breakpoints.down('xs')]: {
-                borderCollapse: 'collapse'
-            }
-        }
-    }
-));
+import { CustomSnackContext } from '../Components/Snackbar.js';
 
 function Dash() {
-    const cellClasses = useCellStyle();
-    const rowClasses = useRowStyle();
-    const headClasses = useHeadStyles();
-    const tableClasses = useTableStyles();
+    const { snack } = useContext(CustomSnackContext);
+
+    const [commissions, setCommissions] = useState(null);
+
+    useEffect(() => {
+        request
+            .get(process.env.REACT_APP_API + '/user/commissions', { withCredentials: true })
+            .then(res => {
+                setCommissions(res.data);
+            })
+            .catch(err => {
+                if (err.response) {
+                    snack({
+                        severity: 'error',
+                        description: err.response.data.error
+                    });
+                }
+            });
+    }, []);
 
     return (
         <div className='content'>
-            <Typography component='h1' variant='h5'>
-                Your commissions
-            </Typography>
-            <div className={styles.projectsTable}><TableContainer component={props => <Paper {...props} variant='outlined' />}>
-                <Table className={tableClasses.root} aria-label='simple table'>
-                    <TableHead className={headClasses.root}>
-                        <TableRow>
-                            <TableCell>Project</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Client</TableCell>
-                            <TableCell>Tags</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {commissions.map((commission, i) => (
-                            <TableRow className={rowClasses.root} key={i}>
-                                <TableCell className={cellClasses.root} component='th' scope='row'>
-                                    <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Name</strong>
-                                        <Typography variant='body2'>
-                                            {commission.name}
-                                        </Typography>
-                                    </div>
-                                </TableCell>
-                                <TableCell className={cellClasses.root}>
-                                    <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Status</strong>
-                                        <Typography variant='body2'>
-                                            {commission.name}
-                                        </Typography>
-                                    </div>
-                                </TableCell>
-                                <TableCell className={cellClasses.root}>
-                                    <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Client</strong>
-                                        <Typography variant='body2'>
-                                            {commission.name}
-                                        </Typography>
-                                    </div>
-                                </TableCell>
-                                <TableCell className={cellClasses.root}>
-                                    <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Tags</strong>
-                                        <Typography variant='body2'>
-                                            {commission.name}
-                                        </Typography>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <div className={styles.heading}>
+                <Typography component='h1' variant='h5'>
+                    Your commissions
+                </Typography>
             </div>
+            <div className={styles.actions}>
+                <Button
+                    disableElevation
+                    variant='contained'
+                    color='primary'
+                >
+                    Create new commission
+                </Button>
+            </div>
+            <Commission commissions={commissions} />
         </div>
     );
 }

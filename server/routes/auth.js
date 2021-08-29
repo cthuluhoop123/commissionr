@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 
 router.post('/register', async (req, res, next) => {
     const { email, artistName, password } = req.body;
-    if (!email || !artistName|| !password) {
+    if (!email || !artistName || !password) {
         res.status(400).json({
             error: 'Missing email/artist name/password'
         });
@@ -18,7 +18,7 @@ router.post('/register', async (req, res, next) => {
     try {
         const hash = await bcrypt.hash(password, 10);
         const user = await database.registerUser({ email, artistName, passwordHash: hash });
-        const userPayload = { email: user.email, artistName: user.artist_name };
+        const userPayload = { id: user.id, email: user.email, artistName: user.artist_name };
         jwt.sign(userPayload, process.env.JWT_SECRET, (err, token) => {
             if (err) { throw err; }
 
@@ -49,8 +49,14 @@ router.post('/login', async (req, res, next) => {
             });
             return;
         }
-        const user = await database.getUser(email);
-        const userPayload = { email: user.email, artistName: user.artist_name };
+        const user = await database.getUser({ email });
+        if (!user) {
+            res.status(401).json({
+                error: 'Wrong password.'
+            });
+            return;
+        }
+        const userPayload = { id: user.id, email: user.email, artistName: user.artist_name };
         const correctPassword = await bcrypt.compare(password, user.password_hash);
 
         if (correctPassword) {

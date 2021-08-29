@@ -5,7 +5,11 @@ import Signup from './Views/Signup.js';
 import Login from './Views/Login.js';
 import Dash from './Views/Dash.js';
 
+import request from 'axios';
+
 import { CustomSnackbar, useCustomSnackbar, CustomSnackContext } from './Components/Snackbar.js';
+
+request.defaults.withCredentials = true;
 
 function App() {
     const {
