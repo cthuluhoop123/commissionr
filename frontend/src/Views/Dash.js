@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import {
     Button,
     Typography,
+    useMediaQuery
 } from '@material-ui/core';
 
 import Commission from '../Components/Commission.js';
