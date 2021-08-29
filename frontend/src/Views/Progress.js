@@ -1,4 +1,4 @@
-import Progressbar from '../Components/Progressbar/Progressbar.js';
+import Progressbar from '../Components/Progressbar.js';
 
 import styles from '../Css/progress.module.css';
 

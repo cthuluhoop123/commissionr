@@ -3,7 +3,7 @@ import {
     Card,
     CardContent
 } from '@material-ui/core';
-import styles from '../../Css/progress.module.css';
+import styles from '../Css/progress.module.css';
 
 function Progressbar({ data }) {
     return (

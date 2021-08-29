@@ -1,5 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 
+import { Redirect } from 'react-router-dom';
+
 import {
     TextField,
     Typography,
@@ -15,19 +17,17 @@ import request from 'axios';
 
 import { CustomSnackContext } from '../Components/Snackbar.js';
 
-function Home() {
+function Signup() {
     const { snack } = useContext(CustomSnackContext);
 
     const [email, setEmail] = useState('');
-    const [artistName, setArtistName] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const [loggedIn, setLoggedIn] = useState(false);
 
     const [formErrors, setFormErrors] = useState({
         email: false,
-        artistName: false,
         password: false,
-        confirmPassword: false
     });
 
     const validate = () => {
@@ -44,21 +44,9 @@ function Home() {
             errors.email = 'Invalid email';
             canProceed = false;
         }
-
-        if (!artistName) {
-            errors.artistName = 'Invalid name';
-            canProceed = false;
-        }
-
-        if (!password || !confirmPassword) {
+        if (!password) {
             errors.password = 'Invalid password';
             errors.confirmPassword = 'Invalid password';
-            canProceed = false;
-        }
-
-        if (password !== confirmPassword) {
-            errors.password = 'Password do not match!';
-            errors.confirmPassword = 'Password do not match!';
             canProceed = false;
         }
 
@@ -66,15 +54,15 @@ function Home() {
         return canProceed;
     };
 
-    const register = () => {
-        request.post(process.env.REACT_APP_API + '/auth/register', {
+    const login = () => {
+        request.post(process.env.REACT_APP_API + '/auth/login', {
             email,
-            artistName,
             password
         }).then(res => {
             snack({
-                description: 'Thanks for signing up!'
+                description: 'Successfully logged in!'
             });
+            setTimeout(() => setLoggedIn(true), 500);
         }).catch(err => {
             if (err.response) {
                 snack({
@@ -85,6 +73,10 @@ function Home() {
         });
     };
 
+    if (loggedIn) {
+        return <Redirect to='/dash' />;
+    }
+
     return (
         <div className={styles.content}>
             <div className={styles.heading}>
@@ -92,7 +84,7 @@ function Home() {
                     <AccessibleForwardIcon />
                 </Avatar>
                 <Typography component='h1' variant='h5'>
-                    Create an account
+                    Log in
                 </Typography>
             </div>
             <div className={styles.form}>
@@ -112,35 +104,12 @@ function Home() {
                         <TextField
                             required
                             fullWidth
-                            label='Artist Handle'
-                            variant='outlined'
-                            onChange={e => setArtistName(e.target.value)}
-                            error={!!formErrors.artistName}
-                            helperText={formErrors.artistName}
-                        />
-                    </div>
-                    <div className={styles.formGroup}>
-                        <TextField
-                            required
-                            fullWidth
                             label='Password'
                             type='password'
                             variant='outlined'
                             onChange={e => setPassword(e.target.value)}
                             error={!!formErrors.password}
                             helperText={formErrors.password}
-                        />
-                    </div>
-                    <div className={styles.formGroup}>
-                        <TextField
-                            required
-                            fullWidth
-                            label='Confirm Password'
-                            type='password'
-                            variant='outlined'
-                            onChange={e => setConfirmPassword(e.target.value)}
-                            error={!!formErrors.confirmPassword}
-                            helperText={formErrors.confirmPassword}
                         />
                     </div>
                     <Button
@@ -151,7 +120,7 @@ function Home() {
                         fullWidth
                         onClick={() => {
                             if (validate()) {
-                                register();
+                                login();
                             }
                         }}
                     >
@@ -163,4 +132,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Signup;

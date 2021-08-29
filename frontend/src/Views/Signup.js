@@ -15,7 +15,7 @@ import request from 'axios';
 
 import { CustomSnackContext } from '../Components/Snackbar.js';
 
-function Home() {
+function Signup() {
     const { snack } = useContext(CustomSnackContext);
 
     const [email, setEmail] = useState('');
@@ -163,4 +163,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Signup;

@@ -1,0 +1,21 @@
+.projectsTable {
+    margin-top: 2rem;
+}
+
+.row {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.responsiveTbName {
+    display: block;
+}
+
+@media only screen and (min-width: 600px) {
+    .responsiveTbName {
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 768px) {}
