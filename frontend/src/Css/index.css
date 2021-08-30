@@ -12,3 +12,11 @@ body {
     min-height: 100%;
     border-radius: 10px;
 }
+
+.heading {
+    margin-bottom: 1rem;
+}
+
+.formActions button {
+    margin-right: .5rem;
+}

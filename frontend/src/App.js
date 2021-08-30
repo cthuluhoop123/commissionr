@@ -1,9 +1,12 @@
 import { Route, Switch } from 'react-router-dom';
+
+
 import Progress from './Views/Progress.js';
 import Home from './Views/Home.js';
 import Signup from './Views/Signup.js';
 import Login from './Views/Login.js';
 import Dash from './Views/Dash.js';
+import Commission from './Views/Commission.js';
 
 import request from 'axios';
 
@@ -18,7 +21,7 @@ function App() {
         snack,
         close,
     } = useCustomSnackbar();
-    
+
     return (
         <>
             <CustomSnackContext.Provider
@@ -31,6 +34,7 @@ function App() {
             >
                 <Switch>
                     <Route exact path='/' component={Home} />
+                    <Route exact path='/commission/:id?' component={Commission} />
                     <Route exact path='/dash' component={Dash} />
                     <Route exact path='/signup' component={Signup} />
                     <Route exact path='/login' component={Login} />

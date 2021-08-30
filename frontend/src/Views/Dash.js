@@ -6,6 +6,8 @@ import {
     useMediaQuery
 } from '@material-ui/core';
 
+import { Link } from 'react-router-dom';
+
 import Commission from '../Components/Commission.js';
 
 import styles from '../Css/dash.module.css';
@@ -37,19 +39,21 @@ function Dash() {
 
     return (
         <div className='content'>
-            <div className={styles.heading}>
+            <div className='heading'>
                 <Typography component='h1' variant='h5'>
                     Your commissions
                 </Typography>
             </div>
             <div className={styles.actions}>
-                <Button
-                    disableElevation
-                    variant='contained'
-                    color='primary'
-                >
-                    Create new commission
-                </Button>
+                <Link to='/commission'>
+                    <Button
+                        disableElevation
+                        variant='contained'
+                        color='primary'
+                    >
+                        Create new commission
+                    </Button>
+                </Link>
             </div>
             <Commission commissions={commissions} />
         </div>

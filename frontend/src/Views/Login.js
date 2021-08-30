@@ -11,13 +11,13 @@ import {
 
 import AccessibleForwardIcon from '@material-ui/icons/AccessibleForward';
 
-import styles from '../Css/Home.module.css';
+import styles from '../Css/home.module.css';
 
 import request from 'axios';
 
 import { CustomSnackContext } from '../Components/Snackbar.js';
 
-function Signup() {
+function Login() {
     const { snack } = useContext(CustomSnackContext);
 
     const [email, setEmail] = useState('');
@@ -79,7 +79,7 @@ function Signup() {
 
     return (
         <div className={styles.content}>
-            <div className={styles.heading}>
+            <div className='heading'>
                 <Avatar className={styles.avatar}>
                     <AccessibleForwardIcon />
                 </Avatar>
@@ -132,4 +132,4 @@ function Signup() {
     );
 }
 
-export default Signup;
+export default Login;

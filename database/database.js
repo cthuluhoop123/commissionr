@@ -32,18 +32,39 @@ async function getCommissions(id) {
     return commissions;
 }
 
-async function createCommission({ id: user_id, name }) {
+async function getCommission(id) {
+    const commission = await Commission.query()
+        .findById(id);
+    return commission;
+}
+
+
+async function createCommission({ id: user_id, projectName, clientName }) {
     const commissions = await Commission.query()
         .insert({
             user_id,
-            name
+            name: projectName,
+            client_name: clientName
         });
     return commissions;
 }
+
+async function editCommission({ id, projectName, clientName }) {
+    const commission = await Commission.query()
+        .update({
+            name: projectName,
+            client_name: clientName
+        })
+        .where('id', id);
+    return { id, projectName, clientName };
+}
+
 
 module.exports = {
     registerUser,
     getUser,
     getCommissions,
+    getCommission,
+    editCommission,
     createCommission
 };

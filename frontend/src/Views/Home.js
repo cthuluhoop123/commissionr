@@ -9,7 +9,7 @@ import {
 
 import AccessibleForwardIcon from '@material-ui/icons/AccessibleForward';
 
-import styles from '../Css/Home.module.css';
+import styles from '../Css/home.module.css';
 
 import request from 'axios';
 
@@ -87,7 +87,7 @@ function Home() {
 
     return (
         <div className={styles.content}>
-            <div className={styles.heading}>
+            <div className='heading'>
                 <Avatar className={styles.avatar}>
                     <AccessibleForwardIcon />
                 </Avatar>

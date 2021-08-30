@@ -10,6 +10,8 @@ import {
     makeStyles
 } from '@material-ui/core';
 
+import { Link } from 'react-router-dom';
+
 import styles from '../Css/commissionTable.module.css';
 
 const useCellStyle = makeStyles(theme => (
@@ -30,7 +32,13 @@ const useRowStyle = makeStyles(theme => (
             [theme.breakpoints.down('xs')]: {
                 borderBottom: '1px solid rgba(224, 224, 224, 1)',
                 padding: '1rem'
-            }
+            },
+            '&:hover': {
+                backgroundColor: '#f7f7f7',
+                cursor: 'pointer',
+                transition: 'background-color 0.5s ease'
+            },
+            textDecoration: 'none'
         }
     }
 ));
@@ -79,7 +87,12 @@ function Commission({ commissions }) {
                     </TableHead>
                     <TableBody>
                         {commissions.map((commission, i) => (
-                            <TableRow className={rowClasses.root} key={i}>
+                            <TableRow
+                                component={Link}
+                                to={'/commission/' + commission.id}
+                                className={rowClasses.root}
+                                key={i}
+                            >
                                 <TableCell className={cellClasses.root} component='th' scope='row'>
                                     <div className={styles.row}>
                                         <strong className={styles.responsiveTbName}>Name</strong>
@@ -100,7 +113,7 @@ function Commission({ commissions }) {
                                     <div className={styles.row}>
                                         <strong className={styles.responsiveTbName}>Client</strong>
                                         <Typography variant='body2'>
-                                            Mary Antoinette
+                                            {commission.client_name}
                                         </Typography>
                                     </div>
                                 </TableCell>
@@ -117,7 +130,7 @@ function Commission({ commissions }) {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+        </div >
     );
 }
 
