@@ -42,7 +42,7 @@
 }
 
 .line {
-    top: 17px;
+    top: 20px;
     right: 20px;
     height: 100%;
     position: absolute;
@@ -59,6 +59,7 @@
 
 .stepper {
     position: relative;
+    padding-top: 3px;
 }
 
 .content {

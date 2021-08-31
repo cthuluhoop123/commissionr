@@ -23,7 +23,7 @@ function Dash() {
 
     useEffect(() => {
         request
-            .get(process.env.REACT_APP_API + '/user/commissions', { withCredentials: true })
+            .get(process.env.REACT_APP_API + '/commission/all', { withCredentials: true })
             .then(res => {
                 setCommissions(res.data);
             })
@@ -45,7 +45,7 @@ function Dash() {
                 </Typography>
             </div>
             <div className={styles.actions}>
-                <Link to='/commission'>
+                <Link to='/commission/new'>
                     <Button
                         disableElevation
                         variant='contained'

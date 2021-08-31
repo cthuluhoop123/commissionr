@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 
 const auth = require('./routes/auth.js');
 const user = require('./routes/user.js');
+const commission = require('./routes/commission.js');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.json());
 
 app.use('/auth', auth);
 app.use('/user', user);
+app.use('/commission', commission);
 
 app.use((err, req, res, next) => {
     res.status(err.status || 500).json({

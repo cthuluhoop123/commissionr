@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect, Link, useParams } from 'react-router-dom';
 
 import {
     TextField,
@@ -10,14 +10,14 @@ import {
     makeStyles
 } from '@material-ui/core';
 
-import styles from '../Css/commission.module.css';
+import styles from '../../Css/commission.module.css';
 
 import request from 'axios';
 
-import { CustomSnackContext } from '../Components/Snackbar.js';
+import { CustomSnackContext } from '../../Components/Snackbar.js';
 
 function Commission(props) {
-    const target = props.match.params.id;
+    const { id: target } = useParams();
 
 
     const { snack } = useContext(CustomSnackContext);
@@ -36,7 +36,7 @@ function Commission(props) {
         if (!target) { return; }
 
         request
-            .get(process.env.REACT_APP_API + '/user/commission', {
+            .get(process.env.REACT_APP_API + '/commission', {
                 params: {
                     id: target
                 }
@@ -71,7 +71,7 @@ function Commission(props) {
     const createCommission = () => {
         if (target) {
             request
-                .post(process.env.REACT_APP_API + '/user/editCommission', {
+                .post(process.env.REACT_APP_API + '/commission/edit', {
                     id: target,
                     projectName: commissionName,
                     clientName
@@ -87,7 +87,7 @@ function Commission(props) {
                 });
         } else {
             request
-                .post(process.env.REACT_APP_API + '/user/createCommission', {
+                .post(process.env.REACT_APP_API + '/commission/create', {
                     projectName: commissionName,
                     clientName
                 })
@@ -104,7 +104,7 @@ function Commission(props) {
     };
 
     if (done) {
-        return <Redirect push to='/dash' />;
+        return <Redirect to={target ? '/commission/' + target : '/dash'} />;
     }
 
     return (
@@ -146,31 +146,19 @@ function Commission(props) {
                         {
                             target
                                 ? (
-                                    <>
-                                        <Button
-                                            size='large'
-                                            disableElevation
-                                            variant='contained'
-                                            color='primary'
-                                            onClick={() => {
-                                                if (validate()) {
-                                                    createCommission();
-                                                }
-                                            }}
-                                        >
-                                            Edit commission
-                                        </Button>
-                                        <Link to='/dash'>
-                                            <Button
-                                                size='large'
-                                                disableElevation
-                                                variant='contained'
-                                                color='secondary'
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </Link>
-                                    </>
+                                    <Button
+                                        size='large'
+                                        disableElevation
+                                        variant='contained'
+                                        color='primary'
+                                        onClick={() => {
+                                            if (validate()) {
+                                                createCommission();
+                                            }
+                                        }}
+                                    >
+                                        Edit commission
+                                    </Button>
                                 )
                                 : (
                                     <Button
@@ -188,6 +176,16 @@ function Commission(props) {
                                     </Button>
                                 )
                         }
+                        <Link replace to={target ? '/commission/' + target : '/dash'}>
+                            <Button
+                                size='large'
+                                disableElevation
+                                variant='contained'
+                                color='secondary'
+                            >
+                                Cancel
+                            </Button>
+                        </Link>
                     </div>
                 </form>
             </div>

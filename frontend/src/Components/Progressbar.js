@@ -6,6 +6,14 @@ import {
 import styles from '../Css/progress.module.css';
 
 function Progressbar({ data }) {
+    if (!data || !data.length) {
+        return (
+            <div>
+                <p>Nothing yet...</p>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.progressBar}>
             {data.map((progressData, i) => {
@@ -14,7 +22,7 @@ function Progressbar({ data }) {
                         <div className={styles.stepper}>
                             <div className={styles.ballAndDate}>
                                 <div className={styles.date}>
-                                    {progressData.date}
+                                    {new Date(progressData.created_at).toLocaleDateString()}
                                 </div>
                                 <div className={`${styles.circle}`} />
                             </div>

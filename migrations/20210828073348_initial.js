@@ -5,6 +5,7 @@ exports.up = function (knex) {
             table.string('artist_name').notNullable();
             table.string('email').notNullable();
             table.string('password_hash').notNullable();
+            table.timestamps(true, true);
         })
         .createTable('commissions', function (table) {
             table.increments('id');
@@ -16,6 +17,7 @@ exports.up = function (knex) {
                 .onDelete('CASCADE');
 
             table.string('name').notNullable();
+            table.timestamps(true, true);
         })
         .createTable('updates', function (table) {
             table.increments('id');

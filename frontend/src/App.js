@@ -6,7 +6,7 @@ import Home from './Views/Home.js';
 import Signup from './Views/Signup.js';
 import Login from './Views/Login.js';
 import Dash from './Views/Dash.js';
-import Commission from './Views/Commission.js';
+import Commission from './Views/Commission/Commission.js';
 
 import request from 'axios';
 
@@ -33,12 +33,12 @@ function App() {
                 }}
             >
                 <Switch>
-                    <Route exact path='/' component={Home} />
-                    <Route exact path='/commission/:id?' component={Commission} />
-                    <Route exact path='/dash' component={Dash} />
-                    <Route exact path='/signup' component={Signup} />
-                    <Route exact path='/login' component={Login} />
-                    <Route exact path='/progress' component={Progress} />
+                    <Route path='/commission/:id?' component={Commission} />
+                    <Route path='/dash' component={Dash} />
+                    <Route path='/signup' component={Signup} />
+                    <Route path='/login' component={Login} />
+                    <Route path='/progress' component={Progress} />
+                    <Route path='/' component={Home} />
                     <Route path='/*'>
                         <h1>what</h1>
                     </Route>

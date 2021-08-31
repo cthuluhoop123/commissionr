@@ -9,12 +9,13 @@ class Commission extends Model {
         const User = require('./User.js');
         const Update = require('./Update.js');
         return {
-            user: {
+            artist: {
                 relation: Model.BelongsToOneRelation,
                 modelClass: User,
+                filter: query => { query.select(['id', 'artist_name']) },
                 join: {
                     from: 'commissions.user_id',
-                    to: 'user.id'
+                    to: 'users.id'
                 }
             },
             updates: {

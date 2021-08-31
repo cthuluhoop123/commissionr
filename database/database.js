@@ -18,9 +18,13 @@ async function registerUser({ email, artistName, passwordHash }) {
     return user;
 }
 
-async function getUser(query) {
-    const user = await User.query()
+async function getUser(query, forPublic = false) {
+    const dbQuery = User.query()
         .findOne(query);
+    if (forPublic) {
+        dbQuery.select(['id', 'artist_name']);
+    }
+    const user = await dbQuery;
     return user;
 }
 
@@ -34,7 +38,8 @@ async function getCommissions(id) {
 
 async function getCommission(id) {
     const commission = await Commission.query()
-        .findById(id);
+        .findById(id)
+        .withGraphFetched('artist');
     return commission;
 }
 
@@ -59,6 +64,32 @@ async function editCommission({ id, projectName, clientName }) {
     return { id, projectName, clientName };
 }
 
+async function getUpdates(commissionId) {
+    const updates = await Update.query()
+        .where({
+            commission_id: commissionId
+        })
+        .orderBy('created_at', 'DESC');
+    return updates;
+}
+
+async function createUpdate({ commissionId, title, description }) {
+    const update = await Update.query()
+        .insert({
+            commission_id: commissionId,
+            title,
+            description
+        });
+    return update;
+}
+
+async function isCommissionOwner(userId, commissionId) {
+    const commission = await getCommission(commissionId);
+    if (!commission) {
+        return false;
+    }
+    return commission.user_id === userId;
+}
 
 module.exports = {
     registerUser,
@@ -66,5 +97,8 @@ module.exports = {
     getCommissions,
     getCommission,
     editCommission,
-    createCommission
+    createCommission,
+    getUpdates,
+    createUpdate,
+    isCommissionOwner
 };
