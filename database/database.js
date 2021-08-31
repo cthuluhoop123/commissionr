@@ -3,6 +3,8 @@ const knex = require('knex')(knexfile[process.env.NODE_ENV]);
 
 const { Model } = require('objection');
 
+const uuid = require('uuid').v4;
+
 Model.knex(knex);
 
 const Commission = require('./models/Commission.js');
@@ -43,13 +45,23 @@ async function getCommission(id) {
     return commission;
 }
 
+async function getCommissionTracking(trackingId) {
+    const commission = await Commission.query()
+        .where({
+            tracking_id: trackingId
+        })
+        .withGraphFetched('artist');
+    return commission[0];
+}
+
 
 async function createCommission({ id: user_id, projectName, clientName }) {
     const commissions = await Commission.query()
         .insert({
             user_id,
             name: projectName,
-            client_name: clientName
+            client_name: clientName,
+            tracking_id: uuid()
         });
     return commissions;
 }
@@ -68,6 +80,18 @@ async function getUpdates(commissionId) {
     const updates = await Update.query()
         .where({
             commission_id: commissionId
+        })
+        .orderBy('created_at', 'DESC');
+    return updates;
+}
+
+async function getUpdatesTracking(trackingId) {
+    const commission = await getCommissionTracking(trackingId);
+    if (!commission) { return []; }
+
+    const updates = await Update.query()
+        .where({
+            commission_id: commission.id
         })
         .orderBy('created_at', 'DESC');
     return updates;
@@ -96,9 +120,11 @@ module.exports = {
     getUser,
     getCommissions,
     getCommission,
+    getCommissionTracking,
     editCommission,
     createCommission,
     getUpdates,
+    getUpdatesTracking,
     createUpdate,
     isCommissionOwner
 };

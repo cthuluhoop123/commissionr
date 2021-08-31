@@ -16,23 +16,13 @@ import styles from '../Css/commissionTable.module.css';
 
 const useCellStyle = makeStyles(theme => (
     {
-        root: {
-            [theme.breakpoints.down('xs')]: {
-                display: 'block',
-                borderBottom: 'none',
-                padding: '10px'
-            }
-        }
+        root: { }
     }
 ));
 
 const useRowStyle = makeStyles(theme => (
     {
         root: {
-            [theme.breakpoints.down('xs')]: {
-                borderBottom: '1px solid rgba(224, 224, 224, 1)',
-                padding: '1rem'
-            },
             '&:hover': {
                 backgroundColor: '#f7f7f7',
                 cursor: 'pointer',
@@ -45,21 +35,13 @@ const useRowStyle = makeStyles(theme => (
 
 const useHeadStyles = makeStyles(theme => (
     {
-        root: {
-            [theme.breakpoints.down('xs')]: {
-                display: 'none'
-            }
-        }
+        root: { }
     }
 ));
 
 const useTableStyles = makeStyles(theme => (
     {
-        root: {
-            [theme.breakpoints.down('xs')]: {
-                borderCollapse: 'collapse'
-            }
-        }
+        root: { }
     }
 ));
 
@@ -95,7 +77,6 @@ function Commission({ commissions }) {
                             >
                                 <TableCell className={cellClasses.root} component='th' scope='row'>
                                     <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Name</strong>
                                         <Typography variant='body2'>
                                             {commission.name}
                                         </Typography>
@@ -103,7 +84,6 @@ function Commission({ commissions }) {
                                 </TableCell>
                                 <TableCell className={cellClasses.root}>
                                     <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Status</strong>
                                         <Typography variant='body2'>
                                             Waiting
                                         </Typography>
@@ -111,7 +91,6 @@ function Commission({ commissions }) {
                                 </TableCell>
                                 <TableCell className={cellClasses.root}>
                                     <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Client</strong>
                                         <Typography variant='body2'>
                                             {commission.client_name}
                                         </Typography>
@@ -119,7 +98,6 @@ function Commission({ commissions }) {
                                 </TableCell>
                                 <TableCell className={cellClasses.root}>
                                     <div className={styles.row}>
-                                        <strong className={styles.responsiveTbName}>Tags</strong>
                                         <Typography variant='body2'>
                                             <i>none yet</i>
                                         </Typography>

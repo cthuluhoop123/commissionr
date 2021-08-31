@@ -7,6 +7,7 @@ import Signup from './Views/Signup.js';
 import Login from './Views/Login.js';
 import Dash from './Views/Dash.js';
 import Commission from './Views/Commission/Commission.js';
+import Track from './Views/Track.js';
 
 import request from 'axios';
 
@@ -34,6 +35,7 @@ function App() {
             >
                 <Switch>
                     <Route path='/commission/:id?' component={Commission} />
+                    <Route path='/a/:trackingId' component={Track} />
                     <Route path='/dash' component={Dash} />
                     <Route path='/signup' component={Signup} />
                     <Route path='/login' component={Login} />
