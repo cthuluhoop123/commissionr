@@ -95,7 +95,6 @@ function Progress({ edit = false }) {
 
     return (
         <div className='content'>
-
             <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
                 <DialogTitle id='form-dialog-title'>Create an update</DialogTitle>
                 <DialogContent>

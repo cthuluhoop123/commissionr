@@ -36,6 +36,24 @@ router.get('/', auth, async (req, res, next) => {
     res.json(commission);
 });
 
+router.get('/track', async (req, res, next) => {
+    const { trackingId } = req.query;
+    if (!trackingId) {
+        res.status(400).json({
+            error: 'Missing tracking ID.'
+        });
+        return;
+    }
+    const commission = await database.getCommissionTracking(trackingId);
+    if (!commission) {
+        res.status(404).json({
+            error: 'Not found'
+        });
+        return;
+    }
+    res.json(commission);
+});
+
 router.post('/create', auth, async (req, res, next) => {
     const { projectName, clientName } = req.body;
     if (!projectName || !clientName) {
@@ -104,7 +122,27 @@ router.get('/updates', auth, async (req, res, next) => {
         });
         return;
     }
+
+    if (!(await database.isCommissionOwner(req.user.id, id))) {
+        res.status(401).json({
+            error: 'Permission denied'
+        });
+        return;
+    }
+
     const updates = await database.getUpdates(id);
+    res.json(updates);
+});
+
+router.get('/trackingUpdates', async (req, res, next) => {
+    const { trackingId } = req.query;
+    if (!trackingId) {
+        res.status(400).json({
+            error: 'Missing tracking ID'
+        });
+        return;
+    }
+    const updates = await database.getUpdatesTracking(trackingId);
     res.json(updates);
 });
 
@@ -124,7 +162,6 @@ router.post('/createUpdate', auth, async (req, res, next) => {
         return;
     }
 
-
     if (!(await database.isCommissionOwner(req.user.id, id))) {
         res.status(401).json({
             error: 'Permission denied'
@@ -142,7 +179,7 @@ router.post('/createUpdate', auth, async (req, res, next) => {
 });
 
 router.post('/editUpdate', auth, async (req, res, next) => {
-    
+
 });
 
 module.exports = router;
