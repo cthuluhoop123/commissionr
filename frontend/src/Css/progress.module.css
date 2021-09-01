@@ -23,22 +23,21 @@
 }
 
 .circle {
-    background: linear-gradient(#e66465, #9198e5);    
+    background: linear-gradient(#e66465, #9198e5);
     border-radius: 50%;
     width: 9px;
     height: 9px;
     display: inline-block;
     margin-right: 1rem;
     margin-left: .5rem;
-    opacity: 60%;
+    opacity: .6;
     border: 1px solid purple;
 }
-
 
 .focused .circle {
     background: linear-gradient(#ff9900, #1427ff);
     border-radius: 50%;
-    opacity: 100%;
+    opacity: 1;
 }
 
 .line {
@@ -63,6 +62,10 @@
 }
 
 .content {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    width: 85%;
     display: inline-block;
 }
 
@@ -74,6 +77,11 @@
 }
 
 .date {
+    display: none;
+}
+
+.responsiveDate {
+    display: block;
     opacity: .8;
     font-size: .8rem;
 }
@@ -84,9 +92,22 @@
 }
 
 .description {
-    opacity: 80%;
+    opacity: .8;
 }
 
 .status {
-    opacity: 70%;
+    opacity: .7;
 }
+
+@media only screen and (min-width: 600px) {
+    .responsiveDate {
+        display: none;
+    }
+    .date {
+        display: block;
+        opacity: .8;
+        font-size: .8rem;
+    }
+}
+
+@media only screen and (min-width: 768px) {}

@@ -18,9 +18,9 @@ function Progress(props) {
             <div className='formActions'>
                 <Link replace to={`/commission/${id}/edit`}>
                     <Button
-                        size='large'
+                        size='medium'
                         disableElevation
-                        variant='contained'
+                        variant='outlined'
                         color='primary'
                     >
                         Edit commission

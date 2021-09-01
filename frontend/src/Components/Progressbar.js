@@ -29,6 +29,9 @@ function Progressbar({ data }) {
                             <div className={styles.line} />
                         </div>
                         <div className={styles.content}>
+                            <div className={`${styles.responsiveDate}`}>
+                                {new Date(progressData.created_at).toLocaleDateString()}
+                            </div>
                             <span className={styles.title}>{progressData.title}</span>
                             <Typography className={styles.description}>{progressData.description}</Typography>
                         </div>

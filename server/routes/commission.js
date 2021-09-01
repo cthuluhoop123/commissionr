@@ -147,7 +147,7 @@ router.get('/trackingUpdates', async (req, res, next) => {
 });
 
 router.post('/createUpdate', auth, async (req, res, next) => {
-    const { id, title, description } = req.body;
+    const { id, title, description, saveTitle } = req.body;
     if (!id) {
         res.status(400).json({
             error: 'Missing commission ID'
@@ -175,11 +175,28 @@ router.post('/createUpdate', auth, async (req, res, next) => {
         description
     });
 
+    if (saveTitle) {
+        database.createUpdateTitle(req.user.id, title).catch(err => { });
+    }
+
     res.json(update);
 });
 
-router.post('/editUpdate', auth, async (req, res, next) => {
+router.post('/createUpdateTitle', auth, async (req, res, next) => {
+    const { title } = req.body;
+    if (!title) {
+        res.status(400).json({
+            error: 'Invalid/missing update title.'
+        });
+        return;
+    }
 
+    const updateTitle = await database.createUpdateTitle(req.user.id, title);
+    res.json(updateTitle);
+});
+
+router.get('/updateTitles', auth, async (req, res, next) => {
+    res.json(await database.getUpdateTitles(req.user.id));
 });
 
 module.exports = router;

@@ -16,21 +16,44 @@ import {
     DialogContent,
     DialogContentText,
     TextField,
-    DialogActions
+    DialogActions,
+    makeStyles,
+    Checkbox,
+    FormControlLabel
 } from '@material-ui/core';
 
+import { Autocomplete } from '@material-ui/lab';
+
+const pastInputs = ['Coloring', 'Sketching'];
+
+const usePaperStyles = makeStyles({
+    root: {
+        padding: '5px 10px'
+    }
+});
+
 function Progress({ edit = false }) {
+    const paperClasses = usePaperStyles();
     const { snack } = useContext(CustomSnackContext);
 
     const { id: commissionId } = useParams();
 
     const [commissionData, setCommissionData] = useState(null);
     const [updates, setUpdates] = useState(null);
+    const [updateTitlesData, setUpdateTitlesData] = useState([]);
+    const [updateTitles, setUpdateTitles] = useState([]);
 
     const [updateTitle, setUpdateTitle] = useState('');
     const [updateDescription, setUpdateDescription] = useState('');
+    const [saveUpdate, setSaveUpdate] = useState(false);
+
+    const [showAdd, setShowAdd] = useState(false);
 
     const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        setUpdateTitles(updateTitlesData.map(update => update.title));
+    }, [updateTitlesData]);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -38,6 +61,9 @@ function Progress({ edit = false }) {
 
     const handleClose = () => {
         setOpen(false);
+        setShowAdd(false)
+        setUpdateTitle('');
+        setUpdateDescription('');
     };
 
     const createUpdate = () => {
@@ -45,10 +71,12 @@ function Progress({ edit = false }) {
             .post(process.env.REACT_APP_API + '/commission/createUpdate', {
                 id: commissionId,
                 title: updateTitle,
-                description: updateDescription
+                description: updateDescription,
+                saveTitle: saveUpdate
             })
             .then(res => {
                 setUpdates([{ ...res.data, created_at: new Date() }].concat(updates))
+                fetchUpdateTitles();
             })
             .catch(err => {
                 if (err.response) {
@@ -60,37 +88,65 @@ function Progress({ edit = false }) {
             });
     };
 
+    const fetchUpdateTitles = () => {
+        return request
+            .get(process.env.REACT_APP_API + '/commission/updateTitles')
+            .then(res => {
+                setUpdateTitlesData(res.data);
+            })
+            .catch(err => {
+                if (err.response) {
+                    snack({
+                        severity: 'error',
+                        description: err.response.data.error
+                    });
+                }
+            });
+    };
 
     useEffect(() => {
-        Promise.all(
-            [
-                request
-                    .get(process.env.REACT_APP_API + '/commission/updates', {
-                        params: {
-                            id: commissionId
-                        }
-                    })
-                    .then(res => {
-                        setUpdates(res.data);
-                    }),
-                request
-                    .get(process.env.REACT_APP_API + '/commission', {
-                        params: {
-                            id: commissionId
-                        }
-                    })
-                    .then(res => {
-                        setCommissionData(res.data);
-                    })
-            ]
-        ).catch(err => {
-            if (err.response) {
-                snack({
-                    severity: 'error',
-                    description: err.response.data.error
-                });
-            }
-        });
+        request
+            .get(process.env.REACT_APP_API + '/commission', {
+                params: {
+                    id: commissionId
+                }
+            })
+            .then(res => {
+                setCommissionData(res.data);
+            })
+            .catch(err => {
+                if (err.response) {
+                    snack({
+                        severity: 'error',
+                        description: err.response.data.error
+                    });
+                }
+            });
+    }, []);
+
+
+    useEffect(() => {
+        request
+            .get(process.env.REACT_APP_API + '/commission/updates', {
+                params: {
+                    id: commissionId
+                }
+            })
+            .then(res => {
+                setUpdates(res.data);
+            })
+            .catch(err => {
+                if (err.response) {
+                    snack({
+                        severity: 'error',
+                        description: err.response.data.error
+                    });
+                }
+            });
+    }, []);
+
+    useEffect(() => {
+        fetchUpdateTitles();
     }, []);
 
     return (
@@ -101,18 +157,35 @@ function Progress({ edit = false }) {
                     <DialogContentText>
                         Create an update that your client will see.
                     </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin='dense'
-                        id='name'
-                        label='Update title'
-                        variant='outlined'
-                        type='email'
-                        fullWidth
-                        onChange={e => {
-                            setUpdateTitle(e.target.value);
+                    <Autocomplete
+                        id='free-solo-demo'
+                        freeSolo
+                        options={updateTitles}
+                        renderInput={(params) => (
+                            <TextField {...params} label='Update title' margin='dense' variant='outlined' />
+                        )}
+                        onInputChange={(event, newInputValue) => {
+                            setUpdateTitle(newInputValue);
+                            if (newInputValue && !updateTitles.includes(newInputValue)) {
+                                setShowAdd(true);
+                            } else {
+                                setShowAdd(false)
+                            }
                         }}
                     />
+                    {
+                        showAdd
+                            ? (
+                                <FormControlLabel
+                                    control={<Checkbox
+                                        onChange={e => {
+                                            setSaveUpdate(e.target.checked);
+                                        }} />}
+                                    label='Add this as an option'
+                                />
+                            )
+                            : null
+                    }
                     <TextField
                         autoFocus
                         variant='outlined'
@@ -136,8 +209,6 @@ function Progress({ edit = false }) {
                             createUpdate()
                                 .then(() => {
                                     handleClose();
-                                    setUpdateTitle(false);
-                                    setUpdateDescription(false);
                                 });
                         }}
                         color='primary'
@@ -149,10 +220,12 @@ function Progress({ edit = false }) {
             {
                 commissionData
                     ? (
-                        <>
+                        <div>
                             <h1>{commissionData.artist.artist_name}'s progress:</h1>
                             <h2 className={styles.status}>Status: {commissionData.status || 'Waiting'}</h2>
-                        </>
+                            <a target='_blank' rel='noreferrer' href={process.env.REACT_APP_URL + '/a/' + commissionData.tracking_id}>Tracking link</a>
+                            <p />
+                        </div>
                     )
                     : null
             }
@@ -160,9 +233,9 @@ function Progress({ edit = false }) {
                 edit
                     ? (
                         <Button
-                            size='large'
+                            size='small'
                             disableElevation
-                            variant='contained'
+                            variant='outlined'
                             color='primary'
                             onClick={handleClickOpen}
                         >
@@ -176,7 +249,7 @@ function Progress({ edit = false }) {
                     ? <Progressbar data={updates} />
                     : null
             }
-        </div>
+        </div >
     );
 }
 

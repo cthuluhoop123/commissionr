@@ -23,7 +23,7 @@ function Dash() {
 
     useEffect(() => {
         request
-            .get(process.env.REACT_APP_API + '/commission/all', { withCredentials: true })
+            .get(process.env.REACT_APP_API + '/commission/all')
             .then(res => {
                 setCommissions(res.data);
             })

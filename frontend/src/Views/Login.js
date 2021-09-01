@@ -62,7 +62,7 @@ function Login() {
             snack({
                 description: 'Successfully logged in!'
             });
-            setTimeout(() => setLoggedIn(true), 500);
+            setLoggedIn(true);
         }).catch(err => {
             if (err.response) {
                 snack({

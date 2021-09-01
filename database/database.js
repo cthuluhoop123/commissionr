@@ -10,6 +10,7 @@ Model.knex(knex);
 const Commission = require('./models/Commission.js');
 const User = require('./models/User.js');
 const Update = require('./models/Update.js');
+const UpdateTitle = require('./models/UpdateTitle.js');
 
 async function registerUser({ email, artistName, passwordHash }) {
     const user = await User.query().insert({
@@ -115,6 +116,25 @@ async function isCommissionOwner(userId, commissionId) {
     return commission.user_id === userId;
 }
 
+async function createUpdateTitle(userId, updateTitle) {
+    const title = await UpdateTitle.query()
+        .insert({
+            user_id: userId,
+            title: updateTitle
+        });
+    return title;
+}
+
+async function getUpdateTitles(userId) {
+    const titles = await UpdateTitle.query()
+        .where({
+            user_id: userId
+        })
+        .select(['id', 'user_id', 'title'])
+        .orderBy('title', 'ASC');
+    return titles;
+}
+
 module.exports = {
     registerUser,
     getUser,
@@ -126,5 +146,7 @@ module.exports = {
     getUpdates,
     getUpdatesTracking,
     createUpdate,
-    isCommissionOwner
+    isCommissionOwner,
+    createUpdateTitle,
+    getUpdateTitles
 };

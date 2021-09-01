@@ -7,6 +7,8 @@ import {
     Button
 } from '@material-ui/core';
 
+import { Redirect } from 'react-router-dom';
+
 import AccessibleForwardIcon from '@material-ui/icons/AccessibleForward';
 
 import styles from '../Css/home.module.css';
@@ -22,6 +24,7 @@ function Signup() {
     const [artistName, setArtistName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [signedUp, setSignedUp] = useState(false);
 
     const [formErrors, setFormErrors] = useState({
         email: false,
@@ -75,6 +78,7 @@ function Signup() {
             snack({
                 description: 'Thanks for signing up!'
             });
+            setSignedUp(true);
         }).catch(err => {
             if (err.response) {
                 snack({
@@ -84,6 +88,10 @@ function Signup() {
             }
         });
     };
+
+    if (signedUp) {
+        return <Redirect to='/dash' />
+    }
 
     return (
         <div className={styles.content}>
