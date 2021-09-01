@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 import {
     TextField,
@@ -11,7 +11,7 @@ import {
 
 import AccessibleForwardIcon from '@material-ui/icons/AccessibleForward';
 
-import styles from '../Css/home.module.css';
+import styles from '../Css/signup.module.css';
 
 import request from 'axios';
 
@@ -111,6 +111,9 @@ function Login() {
                             error={!!formErrors.password}
                             helperText={formErrors.password}
                         />
+                    </div>
+                    <div className={styles.extras}>
+                        <Link to='/signup'>Don't have an account? Sign up!</Link>
                     </div>
                     <Button
                         size='large'

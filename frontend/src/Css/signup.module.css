@@ -37,11 +37,18 @@
     background-color: #3f51b5 !important;
 }
 
+.extras {
+    flex-direction: row-reverse;
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem;
+    text-decoration: underline;
+}
+
 @media only screen and (min-width: 600px) {
     .content {
         width: 70%;
     }
 }
 
-@media only screen and (min-width: 768px) {
-}
+@media only screen and (min-width: 768px) {}

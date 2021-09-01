@@ -158,7 +158,6 @@ function Progress({ edit = false }) {
                         Create an update that your client will see.
                     </DialogContentText>
                     <Autocomplete
-                        id='free-solo-demo'
                         freeSolo
                         options={updateTitles}
                         renderInput={(params) => (

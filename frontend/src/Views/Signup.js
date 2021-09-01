@@ -7,11 +7,11 @@ import {
     Button
 } from '@material-ui/core';
 
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 import AccessibleForwardIcon from '@material-ui/icons/AccessibleForward';
 
-import styles from '../Css/home.module.css';
+import styles from '../Css/signup.module.css';
 
 import request from 'axios';
 
@@ -150,6 +150,9 @@ function Signup() {
                             error={!!formErrors.confirmPassword}
                             helperText={formErrors.confirmPassword}
                         />
+                    </div>
+                    <div className={styles.extras}>
+                        <Link to='/login'>Log into your account</Link>
                     </div>
                     <Button
                         size='large'
