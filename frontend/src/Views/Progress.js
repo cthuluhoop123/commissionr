@@ -19,7 +19,12 @@ import {
     DialogActions,
     makeStyles,
     Checkbox,
-    FormControlLabel
+    FormControlLabel,
+    FormControl,
+    Select,
+    MenuItem,
+    InputLabel,
+    NativeSelect
 } from '@material-ui/core';
 
 import { Autocomplete } from '@material-ui/lab';
@@ -40,8 +45,8 @@ function Progress({ edit = false }) {
 
     const [commissionData, setCommissionData] = useState(null);
     const [updates, setUpdates] = useState(null);
-    const [updateTitlesData, setUpdateTitlesData] = useState([]);
-    const [updateTitles, setUpdateTitles] = useState([]);
+    const [updateTitlesData, setUpdateTitlesData] = useState(null);
+    const [updateTitles, setUpdateTitles] = useState(null);
 
     const [updateTitle, setUpdateTitle] = useState('');
     const [updateDescription, setUpdateDescription] = useState('');
@@ -52,6 +57,7 @@ function Progress({ edit = false }) {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
+        if (!updateTitlesData) { return; }
         setUpdateTitles(updateTitlesData.map(update => update.title));
     }, [updateTitlesData]);
 
@@ -77,6 +83,26 @@ function Progress({ edit = false }) {
             .then(res => {
                 setUpdates([{ ...res.data, created_at: new Date() }].concat(updates))
                 fetchUpdateTitles();
+            })
+            .catch(err => {
+                if (err.response) {
+                    snack({
+                        severity: 'error',
+                        description: err.response.data.error
+                    });
+                }
+            });
+    };
+
+    const updateStatus = e => {
+        // TODO: loading bar stuff
+        return request
+            .post(process.env.REACT_APP_API + '/commission/edit', {
+                status: e.target.value,
+                id: commissionId
+            })
+            .then(res => {
+                setCommissionData({ ...commissionData, status: res.data.status });
             })
             .catch(err => {
                 if (err.response) {
@@ -159,10 +185,19 @@ function Progress({ edit = false }) {
                     </DialogContentText>
                     <Autocomplete
                         freeSolo
-                        options={updateTitles}
-                        renderInput={(params) => (
-                            <TextField {...params} label='Update title' margin='dense' variant='outlined' />
-                        )}
+                        loading={!updateTitlesData}
+                        loadingText='Loading...'
+                        options={updateTitles || []}
+                        renderInput={(params) => {
+                            params.inputProps.autoCapitalize = 'on';
+                            return <TextField
+                                {...params}
+                                autoFocus
+                                label='Update title'
+                                margin='dense'
+                                variant='outlined'
+                            />;
+                        }}
                         onInputChange={(event, newInputValue) => {
                             setUpdateTitle(newInputValue);
                             if (newInputValue && !updateTitles.includes(newInputValue)) {
@@ -186,7 +221,6 @@ function Progress({ edit = false }) {
                             : null
                     }
                     <TextField
-                        autoFocus
                         variant='outlined'
                         margin='dense'
                         multiline
@@ -221,7 +255,46 @@ function Progress({ edit = false }) {
                     ? (
                         <div>
                             <h1>{commissionData.artist.artist_name}'s progress:</h1>
-                            <h2 className={styles.status}>Status: {commissionData.status || 'Waiting'}</h2>
+                            {
+                                edit
+                                    ? (
+                                        <div className={styles.editStatus}>
+                                            <h2 className={styles.status}>Status:</h2>
+                                            <FormControl
+                                                className={styles.select}
+                                                variant='outlined'
+                                            >
+                                                <Select
+                                                    onChange={updateStatus}
+                                                    value={commissionData.status || 'waiting'}
+                                                >
+                                                    <MenuItem value='Waiting'>Waiting</MenuItem>
+                                                    <MenuItem value='In Progress'>In Progress</MenuItem>
+                                                    <MenuItem value='Finished'>Finished</MenuItem>
+                                                    <MenuItem value='Cancelled'>Cancelled</MenuItem>
+                                                    <MenuItem value='Paused'>Paused</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                            <FormControl
+                                                className={styles.nativeSelect}
+                                                variant='outlined'
+                                            >
+                                                <Select
+                                                    native
+                                                    onChange={updateStatus}
+                                                    value={commissionData.status || 'waiting'}
+                                                >
+                                                    <option value='Waiting'>Waiting</option>
+                                                    <option value='In Progress'>In Progress</option>
+                                                    <option value='Finished'>Finished</option>
+                                                    <option value='Cancelled'>Cancelled</option>
+                                                    <option value='Paused'>Paused</option>
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                    )
+                                    : <h2 className={styles.status}>Status: {commissionData.status || 'Waiting'}</h2>
+                            }
                             <a target='_blank' rel='noreferrer' href={process.env.REACT_APP_URL + '/a/' + commissionData.tracking_id}>Tracking link</a>
                             <p />
                         </div>

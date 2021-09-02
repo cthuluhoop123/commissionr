@@ -6,8 +6,12 @@ import {
     TextField,
     Typography,
     Avatar,
-    Button
+    Button,
+    CircularProgress,
+    makeStyles
 } from '@material-ui/core';
+
+import { Autocomplete } from '@material-ui/lab';
 
 import AccessibleForwardIcon from '@material-ui/icons/AccessibleForward';
 
@@ -17,8 +21,17 @@ import request from 'axios';
 
 import { CustomSnackContext } from '../Components/Snackbar.js';
 
+const useCircularProgressStyle = makeStyles({
+    bottom: {
+        color: 'white'
+    }
+});
+
 function Login() {
     const { snack } = useContext(CustomSnackContext);
+    const loaderClasses = useCircularProgressStyle();
+
+    const [loading, setLoading] = useState(true);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -73,6 +86,17 @@ function Login() {
         });
     };
 
+    useState(() => {
+        request
+            .get(process.env.REACT_APP_API + '/auth/me')
+            .then(res => {
+                setLoggedIn(true);
+            })
+            .catch(() => {
+                setLoading(false);
+            })
+    }, []);
+
     if (loggedIn) {
         return <Redirect to='/dash' />;
     }
@@ -91,6 +115,7 @@ function Login() {
                 <form noValidate autoComplete='off'>
                     <div className={styles.formGroup}>
                         <TextField
+                            disabled={loading}
                             required
                             fullWidth
                             label='Email'
@@ -102,6 +127,7 @@ function Login() {
                     </div>
                     <div className={styles.formGroup}>
                         <TextField
+                            disabled={loading}
                             required
                             fullWidth
                             label='Password'
@@ -127,7 +153,10 @@ function Login() {
                             }
                         }}
                     >
-                        Create account
+                        {loading
+                            ? <CircularProgress className={loaderClasses.bottom} />
+                            : 'Login'
+                        }
                     </Button>
                 </form>
             </div>

@@ -7,6 +7,12 @@ const { UniqueViolationError } = require('objection');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const auth = require('../middleewares/authenticate.js');
+
+router.get('/me', auth, async (req, res, next) => {
+    res.json(req.user);
+});
+
 router.post('/register', async (req, res, next) => {
     const { email, artistName, password } = req.body;
     if (!email || !artistName || !password) {

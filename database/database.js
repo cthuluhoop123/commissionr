@@ -67,14 +67,15 @@ async function createCommission({ id: user_id, projectName, clientName }) {
     return commissions;
 }
 
-async function editCommission({ id, projectName, clientName }) {
+async function editCommission({ id, projectName, clientName, status }) {
     const commission = await Commission.query()
         .update({
             name: projectName,
-            client_name: clientName
+            client_name: clientName,
+            status
         })
         .where('id', id);
-    return { id, projectName, clientName };
+    return { id, projectName, clientName, status };
 }
 
 async function getUpdates(commissionId) {

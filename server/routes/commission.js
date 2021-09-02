@@ -82,8 +82,11 @@ router.post('/create', auth, async (req, res, next) => {
 });
 
 router.post('/edit', auth, async (req, res, next) => {
-    const { id, projectName, clientName } = req.body;
-    if (!id || !projectName || !clientName) {
+    const { id, projectName, clientName, status } = req.body;
+    if (
+        !id
+        || (!projectName && !clientName && !status)
+    ) {
         res
             .status(400)
             .json({ error: 'Please include commission ID, new project name, and new client name.' });
@@ -100,7 +103,8 @@ router.post('/edit', auth, async (req, res, next) => {
         const commission = await database.editCommission({
             id,
             projectName,
-            clientName
+            clientName,
+            status
         });
         res.json(commission);
     } catch (err) {
