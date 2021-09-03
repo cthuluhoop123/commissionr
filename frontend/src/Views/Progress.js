@@ -28,6 +28,8 @@ import {
     CircularProgress
 } from '@material-ui/core';
 
+import { Launch } from '@material-ui/icons';
+
 import { Autocomplete } from '@material-ui/lab';
 import { useRef } from 'react';
 
@@ -350,7 +352,16 @@ function Progress({ edit = false }) {
                                     )
                                     : <h2 className={styles.status}>Status: {commissionData.status || 'Waiting'}</h2>
                             }
-                            <a target='_blank' rel='noreferrer' href={process.env.REACT_APP_URL + '/a/' + commissionData.tracking_id}>Tracking link</a>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center'
+                            }}>
+                                <Launch fontSize='small' />
+                                <a target='_blank' rel='noreferrer' href={process.env.REACT_APP_URL + '/a/' + commissionData.tracking_id}>
+                                    Tracking link
+                                </a>
+                            </div>
                             <p />
                         </div>
                     )
@@ -373,7 +384,7 @@ function Progress({ edit = false }) {
             }
             {
                 updates
-                    ? <Progressbar data={updates} finished={commissionData && commissionData.status === 'Finished'} />
+                    ? <Progressbar data={updates} status={commissionData ? commissionData.status : null} />
                     : null
             }
         </div >
