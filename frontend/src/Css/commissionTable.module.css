@@ -8,6 +8,11 @@
     justify-content: space-between;
 }
 
+.projectsTable {
+    margin: auto;
+    width: 100%;
+}
+
 @media only screen and (min-width: 600px) {}
 
 @media only screen and (min-width: 768px) {}

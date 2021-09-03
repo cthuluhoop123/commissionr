@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
-const { UniqueViolationError } = require('objection');
+const { UniqueViolationError, DataError } = require('objection');
 
 const auth = require('../middleewares/authenticate.js');
 
@@ -173,17 +173,27 @@ router.post('/createUpdate', auth, async (req, res, next) => {
         return;
     }
 
-    const update = await database.createUpdate({
-        commissionId: id,
-        title,
-        description
-    });
+    try {
+        const update = await database.createUpdate({
+            commissionId: id,
+            title,
+            description
+        });
 
-    if (saveTitle) {
-        database.createUpdateTitle(req.user.id, title).catch(err => { });
+        if (saveTitle) {
+            database.createUpdateTitle(req.user.id, title).catch(err => { });
+        }
+
+        res.json(update);
+    } catch (err) {
+        if (err instanceof DataError) {
+            res.status(400).json({
+                error: 'Your update must be less that 255 characters.'
+            });
+            return;
+        }
+        next(err);
     }
-
-    res.json(update);
 });
 
 router.post('/createUpdateTitle', auth, async (req, res, next) => {

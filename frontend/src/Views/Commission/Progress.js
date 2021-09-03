@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 
-import { Button } from '@material-ui/core';
+import { Button, Slide } from '@material-ui/core';
 
 import { Link, useParams } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ function Progress(props) {
                 </Link>
             </div>
             <CommissionProgress edit />
-        </div>
+        </div >
     );
 }
 

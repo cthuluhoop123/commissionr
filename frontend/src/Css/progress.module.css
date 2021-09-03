@@ -10,6 +10,7 @@
 }
 
 .progressBar {
+    margin-top: .7rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -52,6 +53,16 @@
     border-left-style: dashed;
 }
 
+.imageGroup {
+    background-color: #f7f7f7;
+    padding: 5px;
+    margin-top: 1rem;
+}
+
+.imageGroup>img {
+    border-radius: 5px;
+}
+
 .progressItem:last-child .line {
     display: none !important;
 }
@@ -73,10 +84,11 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
 }
 
 .date {
+    text-align: right;
     display: none;
 }
 
@@ -97,6 +109,10 @@
 
 .status {
     opacity: .7;
+}
+
+.loader {
+    margin-left: 1rem;
 }
 
 .editStatus {

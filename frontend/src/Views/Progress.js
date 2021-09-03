@@ -24,10 +24,12 @@ import {
     Select,
     MenuItem,
     InputLabel,
-    NativeSelect
+    NativeSelect,
+    CircularProgress
 } from '@material-ui/core';
 
 import { Autocomplete } from '@material-ui/lab';
+import { useRef } from 'react';
 
 const pastInputs = ['Coloring', 'Sketching'];
 
@@ -48,6 +50,9 @@ function Progress({ edit = false }) {
     const [updateTitlesData, setUpdateTitlesData] = useState(null);
     const [updateTitles, setUpdateTitles] = useState(null);
 
+    const [loadingStatus, setLoadingStatus] = useState(false);
+    const [loadingAddUpdate, setLoadingAddUpdate] = useState(false);
+
     const [updateTitle, setUpdateTitle] = useState('');
     const [updateDescription, setUpdateDescription] = useState('');
     const [saveUpdate, setSaveUpdate] = useState(false);
@@ -55,6 +60,8 @@ function Progress({ edit = false }) {
     const [showAdd, setShowAdd] = useState(false);
 
     const [open, setOpen] = useState(false);
+
+    const [images, setImages] = useState([]);
 
     useEffect(() => {
         if (!updateTitlesData) { return; }
@@ -73,6 +80,7 @@ function Progress({ edit = false }) {
     };
 
     const createUpdate = () => {
+        setLoadingAddUpdate(true);
         return request
             .post(process.env.REACT_APP_API + '/commission/createUpdate', {
                 id: commissionId,
@@ -91,11 +99,13 @@ function Progress({ edit = false }) {
                         description: err.response.data.error
                     });
                 }
-            });
+            })
+            .finally(() => setLoadingAddUpdate(false));
     };
 
     const updateStatus = e => {
         // TODO: loading bar stuff
+        setLoadingStatus(true);
         return request
             .post(process.env.REACT_APP_API + '/commission/edit', {
                 status: e.target.value,
@@ -111,7 +121,8 @@ function Progress({ edit = false }) {
                         description: err.response.data.error
                     });
                 }
-            });
+            })
+            .finally(() => setLoadingStatus(false));
     };
 
     const fetchUpdateTitles = () => {
@@ -192,6 +203,7 @@ function Progress({ edit = false }) {
                             params.inputProps.autoCapitalize = 'on';
                             return <TextField
                                 {...params}
+                                required
                                 autoFocus
                                 label='Update title'
                                 margin='dense'
@@ -211,10 +223,16 @@ function Progress({ edit = false }) {
                         showAdd
                             ? (
                                 <FormControlLabel
-                                    control={<Checkbox
-                                        onChange={e => {
-                                            setSaveUpdate(e.target.checked);
-                                        }} />}
+                                    style={{
+                                        display: 'flex'
+                                    }}
+                                    control={
+                                        <Checkbox
+                                            onChange={e => {
+                                                setSaveUpdate(e.target.checked);
+                                            }}
+                                        />
+                                    }
                                     label='Add this as an option'
                                 />
                             )
@@ -226,12 +244,39 @@ function Progress({ edit = false }) {
                         multiline
                         id='name'
                         label='Update description'
-                        type='email'
                         fullWidth
                         onChange={e => {
                             setUpdateDescription(e.target.value);
                         }}
                     />
+                    <Button
+                        variant='outlined'
+                        size='small'
+                        component='label'
+                    >
+                        + Add images
+                        <input
+                            onChange={e => {
+                                setImages(
+                                    [...e.target.files].slice(0, 3).map(file => {
+                                        const url = URL.createObjectURL(file);
+                                        return url;
+                                    })
+                                );
+                            }}
+                            type='file'
+                            multiple
+                            accept='image/*'
+                            hidden
+                        />
+                    </Button>
+                    <div className={styles.imageGroup}>
+                        {
+                            images.map(image => {
+                                return <img src={image} height='50px' />;
+                            })
+                        }
+                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color='primary'>
@@ -245,8 +290,9 @@ function Progress({ edit = false }) {
                                 });
                         }}
                         color='primary'
+                        disabled={!updateTitle || updateDescription.length >= 255 || loadingAddUpdate}
                     >
-                        Create update
+                        Create update{loadingAddUpdate ? '...' : null}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -291,6 +337,15 @@ function Progress({ edit = false }) {
                                                     <option value='Paused'>Paused</option>
                                                 </Select>
                                             </FormControl>
+                                            {
+                                                loadingStatus
+                                                    ? (
+                                                        <div className={styles.loader}>
+                                                            <CircularProgress size={20} />
+                                                        </div>
+                                                    )
+                                                    : null
+                                            }
                                         </div>
                                     )
                                     : <h2 className={styles.status}>Status: {commissionData.status || 'Waiting'}</h2>

@@ -7,7 +7,8 @@ import {
     TableHead,
     TableRow,
     TableBody,
-    makeStyles
+    makeStyles,
+    CircularProgress
 } from '@material-ui/core';
 
 import { Link } from 'react-router-dom';
@@ -16,7 +17,7 @@ import styles from '../Css/commissionTable.module.css';
 
 const useCellStyle = makeStyles(theme => (
     {
-        root: { }
+        root: {}
     }
 ));
 
@@ -35,13 +36,13 @@ const useRowStyle = makeStyles(theme => (
 
 const useHeadStyles = makeStyles(theme => (
     {
-        root: { }
+        root: {}
     }
 ));
 
 const useTableStyles = makeStyles(theme => (
     {
-        root: { }
+        root: {}
     }
 ));
 
@@ -52,7 +53,12 @@ function Commission({ commissions }) {
     const tableClasses = useTableStyles();
 
     if (!commissions) {
-        return <p>...</p>;
+        return (
+            // haha.
+            <div style={{ margin: '2rem auto', width: '5rem' }}>
+                <CircularProgress />
+            </div>
+        );
     }
 
     return (
