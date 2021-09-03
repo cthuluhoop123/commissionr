@@ -16,6 +16,10 @@
     justify-content: space-between;
 }
 
+.progressBar.finished {
+    opacity: .5 !important;
+}
+
 .progressItem {
     padding: 10px;
     display: flex;
@@ -42,7 +46,7 @@
 }
 
 .line {
-    top: 20px;
+    top: 19px;
     right: 20px;
     height: 100%;
     position: absolute;
@@ -144,6 +148,11 @@
     }
     .nativeSelect {
         display: none !important;
+    }
+
+    .line {
+        top: 20px;
+        right: 20.5px;
     }
 }
 

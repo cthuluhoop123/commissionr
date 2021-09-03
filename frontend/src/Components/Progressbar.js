@@ -5,7 +5,7 @@ import {
 } from '@material-ui/core';
 import styles from '../Css/progress.module.css';
 
-function Progressbar({ data }) {
+function Progressbar({ data, finished }) {
     const render = () => {
         if (!data) {
             return (
@@ -28,7 +28,7 @@ function Progressbar({ data }) {
             const dateString = date.toLocaleDateString();
             const timeString = date.toLocaleString(undefined, { hour: 'numeric', minute: 'numeric', hour12: true });
             return (
-                <div key={i} className={`${styles.progressItem} ${i === 0 ? styles.focused : ''}`}>
+                <div key={i} className={`${styles.progressItem} ${i === 0 && !finished ? styles.focused : ''}`}>
                     <div className={styles.stepper}>
                         <div className={styles.ballAndDate}>
                             <div className={styles.date}>
@@ -54,7 +54,7 @@ function Progressbar({ data }) {
 
     return (
         <Fade in={true} mountOnEnter unmountOnExit>
-            <div className={styles.progressBar}>
+            <div className={`${styles.progressBar} ${finished ? styles.finished : ''}`}>
                 {render()}
             </div>
         </Fade>

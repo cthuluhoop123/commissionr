@@ -64,7 +64,7 @@ function Track() {
             }
             {
                 updates
-                    ? <Progressbar data={updates} />
+                    ? <Progressbar data={updates} finished={commissionData && commissionData.status === 'Finished'} />
                     : null
             }
         </div>
