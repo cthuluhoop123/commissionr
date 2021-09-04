@@ -91,7 +91,7 @@ function Commission({ commissions }) {
                                 <TableCell className={cellClasses.root}>
                                     <div className={styles.row}>
                                         <Typography variant='body2'>
-                                            Waiting
+                                            {commission.status}
                                         </Typography>
                                     </div>
                                 </TableCell>
