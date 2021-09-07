@@ -184,6 +184,49 @@ router.get('/getSignedUrl', auth, async (req, res, next) => {
     });
 });
 
+router.post('/editUpdate', auth, async (req, res, next) => {
+    const { id, title, description } = req.body;
+    const update = await database.getUpdate(id);
+
+    if (!update) {
+        res.status(401).json({ error: 'Forbidden' });
+        return;
+    }
+
+    const commission = await database.getCommission(update.commission_id);
+
+    if (commission.user_id !== req.user.id) {
+        res.status(401).json({ error: 'Forbidden' });
+        return;
+    }
+
+    const edit = await database.editUpdate(id, {
+        title,
+        description
+    });
+    res.json(edit);
+});
+
+router.post('/deleteUpdate', auth, async (req, res, next) => {
+    const { id } = req.body;
+    const update = await database.getUpdate(id);
+
+    if (!update) {
+        res.status(401).json({ error: 'Forbidden' });
+        return;
+    }
+
+    const commission = await database.getCommission(update.commission_id);
+
+    if (commission.user_id !== req.user.id) {
+        res.status(401).json({ error: 'Forbidden' });
+        return;
+    }
+
+    const edit = await database.deleteUpdate(id);
+    res.json(edit);
+});
+
 router.post('/createUpdate', auth, async (req, res, next) => {
     const { id, title, description, saveTitle } = req.body;
     if (!id) {

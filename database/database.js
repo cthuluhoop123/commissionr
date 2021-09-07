@@ -146,11 +146,22 @@ async function getUpdateTitles(userId) {
 }
 
 async function addUpdateImage(updateId, key) {
-    await UpdateImages.query()
+    return UpdateImages.query()
         .insert({
             update_id: updateId,
             key
         });
+}
+
+async function editUpdate(updateId, newFields) {
+    return Update.query()
+        .update(newFields)
+        .where({ id: updateId });
+}
+
+async function deleteUpdate(updateId) {
+    return Update.query()
+        .deleteById(updateId);
 }
 
 module.exports = {
@@ -168,5 +179,7 @@ module.exports = {
     isCommissionOwner,
     createUpdateTitle,
     getUpdateTitles,
-    addUpdateImage
+    addUpdateImage,
+    editUpdate,
+    deleteUpdate
 };
