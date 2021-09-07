@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import {
     Typography,
     CircularProgress,
@@ -7,12 +9,16 @@ import {
 import styles from '../Css/progress.module.css';
 
 import LoadableImage from './LoadableImage.js';
+import EditUpdateDialog from './EditUpdateDialog';
 
 function Progressbar({
     data,
     status,
     edit = false
 }) {
+    const [editTarget, setEditTarget] = useState(null);
+    const [open, setOpen] = useState(false);
+
     const render = () => {
         if (!data) {
             return (
@@ -63,7 +69,8 @@ function Progressbar({
                                                 variant='outlined'
                                                 size='small'
                                                 onClick={e => {
-                                                    ;
+                                                    setEditTarget(progressData)
+                                                    setOpen(true);
                                                 }}
                                             >
                                                 Edit
@@ -86,14 +93,6 @@ function Progressbar({
                             }
                         </div>
                     </div>
-                    {
-                        edit
-                            ? (
-                                // edit dialog
-                                null
-                            )
-                            : null
-                    }
                 </>
 
             );
@@ -104,6 +103,22 @@ function Progressbar({
         <Fade in={true} mountOnEnter unmountOnExit>
             <div className={`${styles.progressBar} ${['Cancelled', 'Paused', 'Finished'].includes(status) ? styles.finished : ''}`}>
                 {render()}
+                {
+                    edit && editTarget
+                        ? (
+                            <EditUpdateDialog
+                                updateId={editTarget.id}
+                                initialTitle={editTarget.title}
+                                initialDescription={editTarget.description}
+                                open={open}
+                                setOpen={setOpen}
+                                onClose={() => {
+                                    setEditTarget(null);
+                                }}
+                            />
+                        )
+                        : null
+                }
             </div>
         </Fade>
     );

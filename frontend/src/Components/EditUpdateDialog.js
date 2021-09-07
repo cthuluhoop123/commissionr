@@ -22,12 +22,12 @@ import { CustomSnackContext } from './Snackbar.js';
 
 function EditUpdateDialog({
     updateId,
-    initialTitle,
-    initialDescription,
+    initialTitle = '',
+    initialDescription = '',
     initialImages = [],
     open = false,
     setOpen,
-    onClose
+    onClose = () => { }
 }) {
     const { snack } = useContext(CustomSnackContext);
 
@@ -37,12 +37,25 @@ function EditUpdateDialog({
 
     const [showAdd, setShowAdd] = useState(false);
 
-    const [updateTitle, setUpdateTitle] = useState('');
-    const [updateDescription, setUpdateDescription] = useState('');
+    const [updateTitle, setUpdateTitle] = useState(initialTitle);
+    const [updateDescription, setUpdateDescription] = useState(initialDescription);
     const [saveUpdate, setSaveUpdate] = useState(false);
     const [updateTitlesData, setUpdateTitlesData] = useState(null);
 
-    const [images, setImages] = useState([]);
+    const [images, setImages] = useState(initialImages);
+
+    useState(() => {
+        console.log(initialTitle);
+        setUpdateTitle(initialTitle);
+    }, [initialTitle]);
+
+    useState(() => {
+        setUpdateDescription(initialDescription)
+    }, [initialDescription]);
+
+    useState(() => {
+        setImages(initialImages);
+    }, [initialImages]);
 
     const handleClose = completed => {
         setOpen(false);
@@ -92,7 +105,7 @@ function EditUpdateDialog({
         setLoadingAddUpdate(true);
         return request
             .post(process.env.REACT_APP_API + '/commission/createUpdate', {
-                id: commissionId,
+                id: updateId,
                 title: updateTitle,
                 description: updateDescription,
                 saveTitle: saveUpdate
