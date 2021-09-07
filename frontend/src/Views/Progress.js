@@ -9,29 +9,18 @@ import styles from '../Css/progress.module.css';
 
 import { CustomSnackContext } from '../Components/Snackbar.js';
 
+import CreateUpdateDialog from '../Components/CreateUpdateDialog.js';
+
 import {
     Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    TextField,
-    DialogActions,
     makeStyles,
-    Checkbox,
-    FormControlLabel,
     FormControl,
     Select,
     MenuItem,
-    InputLabel,
-    NativeSelect,
     CircularProgress
 } from '@material-ui/core';
 
 import { Launch } from '@material-ui/icons';
-
-import { Autocomplete } from '@material-ui/lab';
-import { useRef } from 'react';
 
 const pastInputs = ['Coloring', 'Sketching'];
 
@@ -42,71 +31,14 @@ const usePaperStyles = makeStyles({
 });
 
 function Progress({ edit = false }) {
-    const paperClasses = usePaperStyles();
     const { snack } = useContext(CustomSnackContext);
 
     const { id: commissionId } = useParams();
 
     const [commissionData, setCommissionData] = useState(null);
     const [updates, setUpdates] = useState(null);
-    const [updateTitlesData, setUpdateTitlesData] = useState(null);
-    const [updateTitles, setUpdateTitles] = useState(null);
 
     const [loadingStatus, setLoadingStatus] = useState(false);
-    const [loadingAddUpdate, setLoadingAddUpdate] = useState(false);
-
-    const [updateTitle, setUpdateTitle] = useState('');
-    const [updateDescription, setUpdateDescription] = useState('');
-    const [saveUpdate, setSaveUpdate] = useState(false);
-
-    const [showAdd, setShowAdd] = useState(false);
-
-    const [open, setOpen] = useState(false);
-
-    const [images, setImages] = useState([]);
-
-    useEffect(() => {
-        if (!updateTitlesData) { return; }
-        setUpdateTitles(updateTitlesData.map(update => update.title));
-    }, [updateTitlesData]);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    useEffect(() => console.log('hi'))
-
-    const getSignedData = id => {
-        return new Promise((resolve, reject) => {
-            request
-                .get(process.env.REACT_APP_API + '/commission/getSignedUrl', {
-                    params: { id }
-                })
-                .then(res => {
-                    resolve(res.data);
-                })
-                .catch(reject);
-        });
-    };
-
-    const upload = id => {
-        return Promise.all(
-            images.map(image => {
-                return getSignedData(id)
-                    .then(data => {
-                        const form = new FormData();
-                        for (const key of Object.keys(data.fields)) {
-                            form.append(key, data.fields[key]);
-                        }
-                        form.append('file', image);
-                        return request
-                            .post(data.url, form)
-                            .then(res => console.log(res))
-                            .catch(err => { console.error(err); });
-                    })
-            })
-        );
-    }
 
     const fetchUpdates = () => {
         return request
@@ -127,23 +59,6 @@ function Progress({ edit = false }) {
                 }
             });
     }
-
-    const createUpdate = () => {
-        setLoadingAddUpdate(true);
-        return request
-            .post(process.env.REACT_APP_API + '/commission/createUpdate', {
-                id: commissionId,
-                title: updateTitle,
-                description: updateDescription,
-                saveTitle: saveUpdate
-            })
-            .then(res => {
-                //setUpdates([{ ...res.data, created_at: new Date() }].concat(updates))
-                fetchUpdateTitles();
-                return res.data;
-            });
-    };
-
     const updateStatus = e => {
         // TODO: loading bar stuff
         setLoadingStatus(true);
@@ -164,22 +79,6 @@ function Progress({ edit = false }) {
                 }
             })
             .finally(() => setLoadingStatus(false));
-    };
-
-    const fetchUpdateTitles = () => {
-        return request
-            .get(process.env.REACT_APP_API + '/commission/updateTitles')
-            .then(res => {
-                setUpdateTitlesData(res.data);
-            })
-            .catch(err => {
-                if (err.response) {
-                    snack({
-                        severity: 'error',
-                        description: err.response.data.error
-                    });
-                }
-            });
     };
 
     useEffect(() => {
@@ -205,10 +104,6 @@ function Progress({ edit = false }) {
 
     useEffect(() => {
         fetchUpdates();
-    }, []);
-
-    useEffect(() => {
-        fetchUpdateTitles();
     }, []);
 
     return (
@@ -283,23 +178,27 @@ function Progress({ edit = false }) {
                     : null
             }
             {
-                edit
+                edit && commissionData
                     ? (
-                        <Button
-                            size='small'
-                            disableElevation
-                            variant='outlined'
-                            color='primary'
-                            onClick={handleClickOpen}
-                        >
-                            Create update
-                        </Button>
+                        <CreateUpdateDialog
+                            commissionId={commissionData.id}
+                            onClose={completed => {
+                                if (completed) {
+                                    fetchUpdates();
+                                }
+                            }}
+                        />
                     )
                     : null
             }
             {
                 updates
-                    ? <Progressbar data={updates} status={commissionData ? commissionData.status : null} />
+                    ? (
+                        <Progressbar
+                            data={updates}
+                            status={commissionData ? commissionData.status : null}
+                        />
+                    )
                     : null
             }
         </div >

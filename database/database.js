@@ -103,6 +103,7 @@ async function getUpdatesTracking(trackingId) {
         .where({
             commission_id: commission.id
         })
+        .withGraphFetched('images')
         .orderBy('created_at', 'DESC');
     return updates;
 }

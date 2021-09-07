@@ -148,21 +148,7 @@ router.get('/updates', auth, async (req, res, next) => {
     }
 
     const updates = await database.getUpdates(id);
-    for (const update of updates) {
-        if (update.images.length) {
-            const signedUrls = await Promise.all(
-                update.images.map(image => {
-                    return s3.getSignedUrlPromise('getObject', {
-                        Bucket: 'commissionr',
-                        Key: image.key,
-                        Expires: 60
-                    });
-                })
-            );
-            update.images = signedUrls;
-        }
-    }
-    res.json(updates);
+    res.json(await keyToSignedUrl(updates));
 });
 
 router.get('/trackingUpdates', async (req, res, next) => {
@@ -174,7 +160,7 @@ router.get('/trackingUpdates', async (req, res, next) => {
         return;
     }
     const updates = await database.getUpdatesTracking(trackingId);
-    res.json(updates);
+    res.json(await keyToSignedUrl(updates));
 });
 
 router.get('/getSignedUrl', auth, async (req, res, next) => {
@@ -260,5 +246,24 @@ router.post('/createUpdateTitle', auth, async (req, res, next) => {
 router.get('/updateTitles', auth, async (req, res, next) => {
     res.json(await database.getUpdateTitles(req.user.id));
 });
+
+async function keyToSignedUrl(updates) {
+    for (const update of updates) {
+        if (update.images.length) {
+            const signedUrls = await Promise.all(
+                update.images.map(image => {
+                    return s3.getSignedUrlPromise('getObject', {
+                        Bucket: 'commissionr',
+                        Key: image.key,
+                        Expires: 60
+                    });
+                })
+            );
+            update.images = signedUrls;
+        }
+    }
+    return updates;
+}
+
 
 module.exports = router;
