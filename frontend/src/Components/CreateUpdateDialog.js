@@ -64,6 +64,9 @@ function CreateUpdateDialog({ commissionId, onClose }) {
     const upload = id => {
         return Promise.all(
             images.map(image => {
+                if (image.size >= 5e6) {
+                    return;
+                }
                 return getSignedData(id)
                     .then(data => {
                         const form = new FormData();
@@ -196,7 +199,13 @@ function CreateUpdateDialog({ commissionId, onClose }) {
                         + Add images
                         <input
                             onChange={e => {
-                                setImages([...e.target.files]);
+                                if (e.target.files.length > 3) {
+                                    snack({
+                                        severity: 'warning',
+                                        description: 'You can only upload a max of 3 files per update (each 5mb max).'
+                                    })
+                                }
+                                setImages([...e.target.files].slice(0, 3));
                             }}
                             type='file'
                             multiple
@@ -208,13 +217,17 @@ function CreateUpdateDialog({ commissionId, onClose }) {
                         {
                             images.map(file => {
                                 const url = URL.createObjectURL(file);
-                                return <img src={url} height='50px' />;
+                                return <img className={`${file.size >= 5e6 ? styles.tooBig : ''}`} src={url} height='50px' />;
                             })
                         }
                     </div>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color='primary'>
+                    <Button
+                        onClick={handleClose}
+                        color='primary'
+                        disabled={loadingAddUpdate}
+                    >
                         Cancel
                     </Button>
                     <Button

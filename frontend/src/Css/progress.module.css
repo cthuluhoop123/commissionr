@@ -134,6 +134,10 @@
     display: none !important;
 }
 
+.tooBig {
+    border: 1px solid red;
+}
+
 @media only screen and (min-width: 600px) {
     .responsiveDate {
         display: none;

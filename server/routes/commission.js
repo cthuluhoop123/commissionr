@@ -178,7 +178,7 @@ router.get('/getSignedUrl', auth, async (req, res, next) => {
     s3.createPresignedPost({
         Bucket: 'commissionr',
         Fields: { key },
-        Conditions: [['content-length-range', 100, 5 * 1000 * 1000]]
+        Conditions: [['content-length-range', 100, 5e6]]
     }, (err, data) => {
         res.json(data);
     });
