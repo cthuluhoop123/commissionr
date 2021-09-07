@@ -22,14 +22,6 @@ import {
 
 import { Launch } from '@material-ui/icons';
 
-const pastInputs = ['Coloring', 'Sketching'];
-
-const usePaperStyles = makeStyles({
-    root: {
-        padding: '5px 10px'
-    }
-});
-
 function Progress({ edit = false }) {
     const { snack } = useContext(CustomSnackContext);
 
@@ -39,6 +31,15 @@ function Progress({ edit = false }) {
     const [updates, setUpdates] = useState(null);
 
     const [loadingStatus, setLoadingStatus] = useState(false);
+
+    const [open, setOpen] = useState(false);
+
+    const [edittingUpdate, setEdittingUpdate] = useState(false);
+    const [editData, setEditData] = useState({
+        title: '',
+        description: '',
+        images: []
+    });
 
     const fetchUpdates = () => {
         return request
@@ -180,14 +181,36 @@ function Progress({ edit = false }) {
             {
                 edit && commissionData
                     ? (
-                        <CreateUpdateDialog
-                            commissionId={commissionData.id}
-                            onClose={completed => {
-                                if (completed) {
-                                    fetchUpdates();
-                                }
-                            }}
-                        />
+                        <>
+                            <CreateUpdateDialog
+                                commissionId={commissionData.id}
+                                open={open}
+                                setOpen={setOpen}
+                                edit={edittingUpdate}
+                                title={editData.title}
+                                description={editData.description}
+                                onClose={completed => {
+                                    setEditData({
+                                        title: '',
+                                        description: '',
+                                        images: []
+                                    });
+
+                                    if (completed) {
+                                        fetchUpdates();
+                                    }
+                                }}
+                            />
+                            <Button
+                                size='small'
+                                disableElevation
+                                variant='outlined'
+                                color='primary'
+                                onClick={() => setOpen(true)}
+                            >
+                                Create update
+                            </Button>
+                        </>
                     )
                     : null
             }
@@ -195,6 +218,7 @@ function Progress({ edit = false }) {
                 updates
                     ? (
                         <Progressbar
+                            edit={edit}
                             data={updates}
                             status={commissionData ? commissionData.status : null}
                         />

@@ -18,13 +18,16 @@ import styles from '../Css/progress.module.css';
 
 import request from 'axios';
 
-import { CustomSnackContext } from '../Components/Snackbar.js';
+import { CustomSnackContext } from './Snackbar.js';
 
-function CreateUpdateDialog({
-    commissionId,
-    onClose,
+function EditUpdateDialog({
+    updateId,
+    initialTitle,
+    initialDescription,
+    initialImages = [],
     open = false,
-    setOpen
+    setOpen,
+    onClose
 }) {
     const { snack } = useContext(CustomSnackContext);
 
@@ -259,4 +262,4 @@ function CreateUpdateDialog({
     );
 }
 
-export default CreateUpdateDialog;
+export default EditUpdateDialog;
