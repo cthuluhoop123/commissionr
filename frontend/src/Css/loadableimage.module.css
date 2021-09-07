@@ -1,0 +1,18 @@
+.attachments {
+    padding: 1rem;
+    overflow: auto;
+    display: flex;
+}
+
+.attachments>img, .attachments>.placeHolder {
+    height: 100px;
+    margin-right: 1rem;
+}
+
+img.loading {
+    display: none;
+}
+
+div.loading {
+    display: none;
+}

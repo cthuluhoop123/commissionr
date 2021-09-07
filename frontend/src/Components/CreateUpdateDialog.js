@@ -45,7 +45,7 @@ function CreateUpdateDialog({ commissionId, onClose }) {
         setUpdateTitle('');
         setUpdateDescription('');
         setImages([]);
-        onClose(completed);
+        onClose(completed === true);
     };
 
     const getSignedData = id => {

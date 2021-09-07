@@ -5,6 +5,8 @@ import {
 } from '@material-ui/core';
 import styles from '../Css/progress.module.css';
 
+import LoadableImage from './LoadableImage.js';
+
 function Progressbar({ data, status }) {
     const render = () => {
         if (!data) {
@@ -48,15 +50,7 @@ function Progressbar({ data, status }) {
                         <Typography className={styles.description}>{progressData.description}</Typography>
                         {
                             progressData.images.length
-                                ? (
-                                    <div className={styles.attachments}>
-                                        {
-                                            progressData.images.map((image, i) => {
-                                                return <img key={image} src={image} />;
-                                            })
-                                        }
-                                    </div>
-                                )
+                                ? <LoadableImage images={progressData.images} />
                                 : null
                         }
                     </div>
