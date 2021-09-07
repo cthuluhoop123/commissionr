@@ -13,6 +13,10 @@ body {
     border-radius: 10px;
 }
 
+img {
+    border-radius: 5px;
+}
+
 .heading {
     margin-bottom: 1rem;
     display: flex;

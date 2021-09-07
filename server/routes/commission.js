@@ -1,6 +1,19 @@
 const { Router } = require('express');
 const router = Router();
 
+const uuid = require('uuid').v4;
+
+const AWS = require('aws-sdk');
+AWS.config.update({
+    credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_KEY
+    },
+    region: 'us-east-1'
+});
+
+const s3 = new AWS.S3();
+
 const { UniqueViolationError, DataError } = require('objection');
 
 const auth = require('../middleewares/authenticate.js');
@@ -135,6 +148,20 @@ router.get('/updates', auth, async (req, res, next) => {
     }
 
     const updates = await database.getUpdates(id);
+    for (const update of updates) {
+        if (update.images.length) {
+            const signedUrls = await Promise.all(
+                update.images.map(image => {
+                    return s3.getSignedUrlPromise('getObject', {
+                        Bucket: 'commissionr',
+                        Key: image.key,
+                        Expires: 60
+                    });
+                })
+            );
+            update.images = signedUrls;
+        }
+    }
     res.json(updates);
 });
 
@@ -148,6 +175,27 @@ router.get('/trackingUpdates', async (req, res, next) => {
     }
     const updates = await database.getUpdatesTracking(trackingId);
     res.json(updates);
+});
+
+router.get('/getSignedUrl', auth, async (req, res, next) => {
+    const { id } = req.query;
+    if (!id) {
+        res.status(400).json({
+            error: 'Missing update target ID.'
+        });
+        return;
+    }
+    const key = uuid();
+
+    await database.addUpdateImage(id, key);
+
+    s3.createPresignedPost({
+        Bucket: 'commissionr',
+        Fields: { key },
+        Conditions: [['content-length-range', 100, 5 * 1000 * 1000]]
+    }, (err, data) => {
+        res.json(data);
+    });
 });
 
 router.post('/createUpdate', auth, async (req, res, next) => {

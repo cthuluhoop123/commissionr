@@ -60,11 +60,20 @@
 .imageGroup {
     background-color: #f7f7f7;
     padding: 5px;
-    margin-top: 1rem;
+    padding: 10px;
 }
 
 .imageGroup>img {
-    border-radius: 5px;
+    margin-right: 5px;
+}
+
+.attachments {
+    padding: 1rem;
+}
+
+.attachments>img {
+    height: 100px;
+    margin-right: 1rem;
 }
 
 .progressItem:last-child .line {
@@ -149,7 +158,6 @@
     .nativeSelect {
         display: none !important;
     }
-
     .line {
         top: 20px;
         right: 20.5px;

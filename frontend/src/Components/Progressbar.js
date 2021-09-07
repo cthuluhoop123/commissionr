@@ -46,6 +46,19 @@ function Progressbar({ data, status }) {
                         </div>
                         <span className={styles.title}>{progressData.title}</span>
                         <Typography className={styles.description}>{progressData.description}</Typography>
+                        {
+                            progressData.images.length
+                                ? (
+                                    <div className={styles.attachments}>
+                                        {
+                                            progressData.images.map((image, i) => {
+                                                return <img key={image} src={image} />;
+                                            })
+                                        }
+                                    </div>
+                                )
+                                : null
+                        }
                     </div>
                 </div>
             );

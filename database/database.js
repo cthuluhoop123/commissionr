@@ -11,6 +11,7 @@ const Commission = require('./models/Commission.js');
 const User = require('./models/User.js');
 const Update = require('./models/Update.js');
 const UpdateTitle = require('./models/UpdateTitle.js');
+const UpdateImages = require('./models/UpdateImages.js');
 
 async function registerUser({ email, artistName, passwordHash }) {
     const user = await User.query().insert({
@@ -83,8 +84,15 @@ async function getUpdates(commissionId) {
         .where({
             commission_id: commissionId
         })
-        .orderBy('created_at', 'DESC');
+        .orderBy('created_at', 'DESC')
+        .withGraphFetched('images');
     return updates;
+}
+
+async function getUpdate(updateId) {
+    const update = await Update.query()
+        .findById(updateId);
+    return update;
 }
 
 async function getUpdatesTracking(trackingId) {
@@ -136,6 +144,14 @@ async function getUpdateTitles(userId) {
     return titles;
 }
 
+async function addUpdateImage(updateId, key) {
+    await UpdateImages.query()
+        .insert({
+            update_id: updateId,
+            key
+        });
+}
+
 module.exports = {
     registerUser,
     getUser,
@@ -144,10 +160,12 @@ module.exports = {
     getCommissionTracking,
     editCommission,
     createCommission,
+    getUpdate,
     getUpdates,
     getUpdatesTracking,
     createUpdate,
     isCommissionOwner,
     createUpdateTitle,
-    getUpdateTitles
+    getUpdateTitles,
+    addUpdateImage
 };

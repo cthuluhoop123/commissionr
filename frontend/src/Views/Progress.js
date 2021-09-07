@@ -74,12 +74,59 @@ function Progress({ edit = false }) {
         setOpen(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
-        setShowAdd(false)
-        setUpdateTitle('');
-        setUpdateDescription('');
+    useEffect(() => console.log('hi'))
+
+    const getSignedData = id => {
+        return new Promise((resolve, reject) => {
+            request
+                .get(process.env.REACT_APP_API + '/commission/getSignedUrl', {
+                    params: { id }
+                })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(reject);
+        });
     };
+
+    const upload = id => {
+        return Promise.all(
+            images.map(image => {
+                return getSignedData(id)
+                    .then(data => {
+                        const form = new FormData();
+                        for (const key of Object.keys(data.fields)) {
+                            form.append(key, data.fields[key]);
+                        }
+                        form.append('file', image);
+                        return request
+                            .post(data.url, form)
+                            .then(res => console.log(res))
+                            .catch(err => { console.error(err); });
+                    })
+            })
+        );
+    }
+
+    const fetchUpdates = () => {
+        return request
+            .get(process.env.REACT_APP_API + '/commission/updates', {
+                params: {
+                    id: commissionId
+                }
+            })
+            .then(res => {
+                setUpdates(res.data);
+            })
+            .catch(err => {
+                if (err.response) {
+                    snack({
+                        severity: 'error',
+                        description: err.response.data.error
+                    });
+                }
+            });
+    }
 
     const createUpdate = () => {
         setLoadingAddUpdate(true);
@@ -91,18 +138,10 @@ function Progress({ edit = false }) {
                 saveTitle: saveUpdate
             })
             .then(res => {
-                setUpdates([{ ...res.data, created_at: new Date() }].concat(updates))
+                //setUpdates([{ ...res.data, created_at: new Date() }].concat(updates))
                 fetchUpdateTitles();
-            })
-            .catch(err => {
-                if (err.response) {
-                    snack({
-                        severity: 'error',
-                        description: err.response.data.error
-                    });
-                }
-            })
-            .finally(() => setLoadingAddUpdate(false));
+                return res.data;
+            });
     };
 
     const updateStatus = e => {
@@ -165,23 +204,7 @@ function Progress({ edit = false }) {
 
 
     useEffect(() => {
-        request
-            .get(process.env.REACT_APP_API + '/commission/updates', {
-                params: {
-                    id: commissionId
-                }
-            })
-            .then(res => {
-                setUpdates(res.data);
-            })
-            .catch(err => {
-                if (err.response) {
-                    snack({
-                        severity: 'error',
-                        description: err.response.data.error
-                    });
-                }
-            });
+        fetchUpdates();
     }, []);
 
     useEffect(() => {
@@ -190,114 +213,6 @@ function Progress({ edit = false }) {
 
     return (
         <div className='content'>
-            <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
-                <DialogTitle id='form-dialog-title'>Create an update</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Create an update that your client will see.
-                    </DialogContentText>
-                    <Autocomplete
-                        freeSolo
-                        loading={!updateTitlesData}
-                        loadingText='Loading...'
-                        options={updateTitles || []}
-                        renderInput={(params) => {
-                            params.inputProps.autoCapitalize = 'on';
-                            return <TextField
-                                {...params}
-                                required
-                                autoFocus
-                                label='Update title'
-                                margin='dense'
-                                variant='outlined'
-                            />;
-                        }}
-                        onInputChange={(event, newInputValue) => {
-                            setUpdateTitle(newInputValue);
-                            if (newInputValue && !updateTitles.includes(newInputValue)) {
-                                setShowAdd(true);
-                            } else {
-                                setShowAdd(false)
-                            }
-                        }}
-                    />
-                    {
-                        showAdd
-                            ? (
-                                <FormControlLabel
-                                    style={{
-                                        display: 'flex'
-                                    }}
-                                    control={
-                                        <Checkbox
-                                            onChange={e => {
-                                                setSaveUpdate(e.target.checked);
-                                            }}
-                                        />
-                                    }
-                                    label='Add this as an option'
-                                />
-                            )
-                            : null
-                    }
-                    <TextField
-                        variant='outlined'
-                        margin='dense'
-                        multiline
-                        id='name'
-                        label='Update description'
-                        fullWidth
-                        onChange={e => {
-                            setUpdateDescription(e.target.value);
-                        }}
-                    />
-                    <Button
-                        variant='outlined'
-                        size='small'
-                        component='label'
-                    >
-                        + Add images
-                        <input
-                            onChange={e => {
-                                setImages(
-                                    [...e.target.files].slice(0, 3).map(file => {
-                                        const url = URL.createObjectURL(file);
-                                        return url;
-                                    })
-                                );
-                            }}
-                            type='file'
-                            multiple
-                            accept='image/*'
-                            hidden
-                        />
-                    </Button>
-                    <div className={styles.imageGroup}>
-                        {
-                            images.map(image => {
-                                return <img src={image} height='50px' />;
-                            })
-                        }
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color='primary'>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            createUpdate()
-                                .then(() => {
-                                    handleClose();
-                                });
-                        }}
-                        color='primary'
-                        disabled={!updateTitle || updateDescription.length >= 255 || loadingAddUpdate}
-                    >
-                        Create update{loadingAddUpdate ? '...' : null}
-                    </Button>
-                </DialogActions>
-            </Dialog>
             {
                 commissionData
                     ? (
