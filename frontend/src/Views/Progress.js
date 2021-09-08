@@ -220,6 +220,7 @@ function Progress({ edit = false }) {
                         <Progressbar
                             edit={edit}
                             data={updates}
+                            fetchUpdates={fetchUpdates}
                             status={commissionData ? commissionData.status : null}
                         />
                     )

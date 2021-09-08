@@ -1,6 +1,8 @@
 const { Router } = require('express');
 const router = Router();
 
+const { promisify } = require('util');
+
 const uuid = require('uuid').v4;
 
 const AWS = require('aws-sdk');
@@ -185,26 +187,35 @@ router.get('/getSignedUrl', auth, async (req, res, next) => {
 });
 
 router.post('/editUpdate', auth, async (req, res, next) => {
-    const { id, title, description } = req.body;
-    const update = await database.getUpdate(id);
+    const { id, title, description, clearImages = false } = req.body;
+    try {
+        const update = await database.getUpdate(id);
 
-    if (!update) {
-        res.status(401).json({ error: 'Forbidden' });
-        return;
+        if (!update) {
+            res.status(401).json({ error: 'Forbidden' });
+            return;
+        }
+
+        const commission = await database.getCommission(update.commission_id);
+
+        if (commission.user_id !== req.user.id) {
+            res.status(401).json({ error: 'Forbidden' });
+            return;
+        }
+
+        if (clearImages) {
+            await deleteRemoteUpdateImages(id);
+        }
+
+        const edit = await database.editUpdate(id, {
+            title,
+            description
+        });
+        res.json(edit);
+    } catch (err) {
+        console.error(err);
+        next(err);
     }
-
-    const commission = await database.getCommission(update.commission_id);
-
-    if (commission.user_id !== req.user.id) {
-        res.status(401).json({ error: 'Forbidden' });
-        return;
-    }
-
-    const edit = await database.editUpdate(id, {
-        title,
-        description
-    });
-    res.json(edit);
 });
 
 router.post('/deleteUpdate', auth, async (req, res, next) => {
@@ -223,6 +234,7 @@ router.post('/deleteUpdate', auth, async (req, res, next) => {
         return;
     }
 
+    await deleteRemoteUpdateImages(id);
     const edit = await database.deleteUpdate(id);
     res.json(edit);
 });
@@ -308,5 +320,25 @@ async function keyToSignedUrl(updates) {
     return updates;
 }
 
+
+async function deleteRemoteUpdateImages(updateId) {
+    const updateImages = await database.getUpdateImages(updateId);
+    if (updateImages.length) {
+        const objects = updateImages.map(image => {
+            return {
+                Key: image.key
+            };
+        });
+
+        await promisify(s3.deleteObjects).bind(s3)({
+            Bucket: 'commissionr',
+            Delete: {
+                Objects: objects,
+                Quiet: false
+            }
+        });
+        await database.clearUpdateImages(updateId);
+    }
+}
 
 module.exports = router;

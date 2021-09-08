@@ -45,7 +45,6 @@ function EditUpdateDialog({
     const [images, setImages] = useState(initialImages);
 
     useState(() => {
-        console.log(initialTitle);
         setUpdateTitle(initialTitle);
     }, [initialTitle]);
 
@@ -70,7 +69,7 @@ function EditUpdateDialog({
         return new Promise((resolve, reject) => {
             request
                 .get(process.env.REACT_APP_API + '/commission/getSignedUrl', {
-                    params: { id }
+                    params: { id: updateId }
                 })
                 .then(res => {
                     resolve(res.data);
@@ -85,7 +84,7 @@ function EditUpdateDialog({
                 if (image.size >= 5e6) {
                     return;
                 }
-                return getSignedData(id)
+                return getSignedData(updateId)
                     .then(data => {
                         const form = new FormData();
                         for (const key of Object.keys(data.fields)) {
@@ -96,22 +95,21 @@ function EditUpdateDialog({
                             .post(data.url, form)
                             .then(res => console.log(res))
                             .catch(err => { console.error(err); });
-                    })
+                    });
             })
         );
     }
 
-    const createUpdate = () => {
+    const editUpdate = () => {
         setLoadingAddUpdate(true);
         return request
-            .post(process.env.REACT_APP_API + '/commission/createUpdate', {
+            .post(process.env.REACT_APP_API + '/commission/editUpdate', {
                 id: updateId,
                 title: updateTitle,
                 description: updateDescription,
-                saveTitle: saveUpdate
+                clearImages: true
             })
             .then(res => {
-                fetchUpdateTitles();
                 return res.data;
             });
     };
@@ -143,7 +141,7 @@ function EditUpdateDialog({
 
     return (
         <>
-            <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
+            <Dialog open={open} onClose={() => handleClose(false)} aria-labelledby='form-dialog-title'>
                 <DialogTitle id='form-dialog-title'>Create an update</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -211,7 +209,7 @@ function EditUpdateDialog({
                         size='small'
                         component='label'
                     >
-                        + Add images
+                        Reselect images
                         <input
                             onChange={e => {
                                 if (e.target.files.length > 3) {
@@ -231,15 +229,20 @@ function EditUpdateDialog({
                     <div className={styles.imageGroup}>
                         {
                             images.map(file => {
-                                const url = URL.createObjectURL(file);
-                                return <img className={`${file.size >= 5e6 ? styles.tooBig : ''}`} src={url} height='50px' />;
+                                if (file instanceof File) {
+                                    const url = URL.createObjectURL(file);
+                                    return <img className={`${file.size >= 5e6 ? styles.tooBig : ''}`} src={url} height='50px' />;
+                                }
+                                if (typeof file === 'string') {
+                                    return <img src={file} height='50px' />;
+                                }
                             })
                         }
                     </div>
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={handleClose}
+                        onClick={() => handleClose(false)}
                         color='primary'
                         disabled={loadingAddUpdate}
                     >
@@ -247,7 +250,7 @@ function EditUpdateDialog({
                     </Button>
                     <Button
                         onClick={() => {
-                            createUpdate()
+                            editUpdate()
                                 .then(update => {
                                     return upload(update.id);
                                 })
@@ -267,7 +270,7 @@ function EditUpdateDialog({
                         color='primary'
                         disabled={!updateTitle || updateDescription.length >= 255 || loadingAddUpdate}
                     >
-                        Create update{loadingAddUpdate ? '...' : null}
+                        Edit update{loadingAddUpdate ? '...' : null}
                     </Button>
                 </DialogActions>
             </Dialog>

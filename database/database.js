@@ -145,11 +145,27 @@ async function getUpdateTitles(userId) {
     return titles;
 }
 
+async function getUpdateImages(updateId) {
+    const titles = await UpdateImages.query()
+        .where({
+            update_id: updateId
+        });
+    return titles;
+}
+
 async function addUpdateImage(updateId, key) {
     return UpdateImages.query()
         .insert({
             update_id: updateId,
             key
+        });
+}
+
+async function clearUpdateImages(id) {
+    return UpdateImages.query()
+        .delete()
+        .where({
+            update_id: id
         });
 }
 
@@ -181,5 +197,7 @@ module.exports = {
     getUpdateTitles,
     addUpdateImage,
     editUpdate,
-    deleteUpdate
+    deleteUpdate,
+    getUpdateImages,
+    clearUpdateImages
 };

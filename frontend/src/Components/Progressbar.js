@@ -6,6 +6,9 @@ import {
     Fade,
     Button
 } from '@material-ui/core';
+
+import request from 'axios';
+
 import styles from '../Css/progress.module.css';
 
 import LoadableImage from './LoadableImage.js';
@@ -14,7 +17,8 @@ import EditUpdateDialog from './EditUpdateDialog';
 function Progressbar({
     data,
     status,
-    edit = false
+    edit = false,
+    fetchUpdates
 }) {
     const [editTarget, setEditTarget] = useState(null);
     const [open, setOpen] = useState(false);
@@ -35,6 +39,16 @@ function Progressbar({
                 </div>
             );
         }
+
+        const deleteUpdate = updateId => {
+            return request
+                .post(process.env.REACT_APP_API + '/commission/deleteUpdate', {
+                    id: updateId,
+                })
+                .then(res => {
+                    fetchUpdates();
+                });
+        };
 
         return data.map((progressData, i) => {
             const date = new Date(progressData.created_at);
@@ -63,13 +77,13 @@ function Progressbar({
                             {
                                 edit
                                     ? (
-                                        <>
+                                        <div className={styles.buttonGroup}>
                                             <Button
                                                 color='primary'
                                                 variant='outlined'
                                                 size='small'
                                                 onClick={e => {
-                                                    setEditTarget(progressData)
+                                                    setEditTarget(progressData);
                                                     setOpen(true);
                                                 }}
                                             >
@@ -79,10 +93,13 @@ function Progressbar({
                                                 color='secondary'
                                                 variant='outlined'
                                                 size='small'
+                                                onClick={() => {
+                                                    deleteUpdate(progressData.id);
+                                                }}
                                             >
                                                 Delete
                                             </Button>
-                                        </>
+                                        </div>
                                     )
                                     : null
                             }
@@ -110,10 +127,14 @@ function Progressbar({
                                 updateId={editTarget.id}
                                 initialTitle={editTarget.title}
                                 initialDescription={editTarget.description}
+                                initialImages={editTarget.images}
                                 open={open}
                                 setOpen={setOpen}
-                                onClose={() => {
+                                onClose={completed => {
                                     setEditTarget(null);
+                                    if (completed) {
+                                        fetchUpdates();
+                                    }
                                 }}
                             />
                         )
