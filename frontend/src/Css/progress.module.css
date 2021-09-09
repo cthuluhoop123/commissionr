@@ -58,6 +58,7 @@
 }
 
 .imageGroup {
+    margin-top: 10px;
     background-color: #f7f7f7;
     padding: 5px;
     padding: 10px;
@@ -80,7 +81,7 @@
     margin-top: 5px;
 }
 
-.buttonGroup>button {
+.buttonGroup>button, .buttonGroup>label {
     margin-right: 5px;
 }
 
@@ -162,7 +163,7 @@
         display: none !important;
     }
     .line {
-        top: 20px;
+        top: 19px;
         right: 21px;
     }
 }

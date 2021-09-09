@@ -204,28 +204,41 @@ function EditUpdateDialog({
                             setUpdateDescription(e.target.value);
                         }}
                     />
-                    <Button
-                        variant='outlined'
-                        size='small'
-                        component='label'
-                    >
-                        Reselect images
-                        <input
-                            onChange={e => {
-                                if (e.target.files.length > 3) {
-                                    snack({
-                                        severity: 'warning',
-                                        description: 'You can only upload a max of 3 files per update (each 5mb max).'
-                                    })
-                                }
-                                setImages([...e.target.files].slice(0, 3));
+                    <div className={styles.buttonGroup}>
+                        <Button
+                            variant='outlined'
+                            size='small'
+                            component='label'
+                            color='primary'
+                        >
+                            Reselect images
+                            <input
+                                onChange={e => {
+                                    if (e.target.files.length > 3) {
+                                        snack({
+                                            severity: 'warning',
+                                            description: 'You can only upload a max of 3 files per update (each 5mb max).'
+                                        })
+                                    }
+                                    setImages([...e.target.files].slice(0, 3));
+                                }}
+                                type='file'
+                                multiple
+                                accept='image/*'
+                                hidden
+                            />
+                        </Button>
+                        <Button
+                            variant='outlined'
+                            size='small'
+                            onClick={() => {
+                                setImages([]);
                             }}
-                            type='file'
-                            multiple
-                            accept='image/*'
-                            hidden
-                        />
-                    </Button>
+                            color='secondary'
+                        >
+                            Clear images
+                        </Button>
+                    </div>
                     <div className={styles.imageGroup}>
                         {
                             images.map(file => {
