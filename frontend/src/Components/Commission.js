@@ -8,7 +8,8 @@ import {
     TableRow,
     TableBody,
     makeStyles,
-    CircularProgress
+    CircularProgress,
+    Chip
 } from '@material-ui/core';
 
 import { Link } from 'react-router-dom';
@@ -105,7 +106,10 @@ function Commission({ commissions }) {
                                 <TableCell className={cellClasses.root}>
                                     <div className={styles.row}>
                                         <Typography variant='body2'>
-                                            <i>none yet</i>
+                                            <Chip label='Deletable primary' onDelete={() => { }} color='primary' />
+                                            <Chip label='Deletable primary' onDelete={() => { }} color='primary' />
+                                            <Chip label='Deletable primary' onDelete={() => { }} color='primary' />
+                                            <Chip label='Deletable primary' onDelete={() => { }} color='primary' />
                                         </Typography>
                                     </div>
                                 </TableCell>
